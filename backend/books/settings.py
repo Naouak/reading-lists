@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -150,3 +152,7 @@ MARVEL_API = {
     'PUBLIC_KEY': os.getenv('MARVEL_API_PUBLIC_KEY'),
     'PRIVATE_KEY': os.getenv('MARVEL_API_PRIVATE_KEY'),
 }
+
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+]
