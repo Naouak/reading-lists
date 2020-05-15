@@ -40,7 +40,13 @@
           <p class="control" v-if="canGoDown">
             <button class="button" @click="$emit('move-down')">
               <b-icon icon="arrow-down-thick" />
-              <span>down</span>
+              <span>Down</span>
+            </button>
+          </p>
+          <p class="control">
+            <button class="button" @click="$emit('remove')">
+              <b-icon icon="delete" />
+              <span>Remove</span>
             </button>
           </p>
         </div>

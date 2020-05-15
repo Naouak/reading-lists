@@ -35,7 +35,7 @@
                               :edit-mode="editMode" :condensed="condensed"
                               :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
                               @read="markAsRead(entry.book)"
-                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" />
+                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)" />
           </div>
         </div>
 
@@ -120,6 +120,11 @@ export default {
       this.loading = true;
       this.$api.bookRead(book).then(() => this.updateComponent());
     },
+    remove(entry){
+      this.loading = true;
+      this.$axios.$delete('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/')
+        .then(() => this.updateComponent());
+    }
   },
   beforeMount() {
     this.updateComponent(this.$route);

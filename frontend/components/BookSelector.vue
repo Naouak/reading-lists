@@ -39,7 +39,9 @@
           <div class="media-content">
             <div class="content">
               <div class="subtitle">{{book.title}}</div>
-              <div>Published on <DateDisplay :date="book.pub_date" /></div>
+              <div>Published on
+                <DateDisplay :date="book.pub_date" />
+              </div>
             </div>
 
             <div class="field has-addons">
@@ -50,7 +52,9 @@
                 </button>
               </p>
               <p class="control">
-                <a :href="book.read_online_url" target="_blank" class="button"><b-icon icon="book-open-page-variant" /><span>Read online</span></a>
+                <a :href="book.read_online_url" target="_blank" class="button">
+                  <b-icon icon="book-open-page-variant" />
+                  <span>Read online</span></a>
               </p>
             </div>
           </div>
@@ -87,12 +91,12 @@ export default {
   },
   computed: {
     availableBooks() {
-      if(!this.books){
+      if (!this.books) {
         return [];
       }
       let books = this.books;
 
-      if(this.hideSelectedItems){
+      if (this.hideSelectedItems) {
         books = books.filter(b => !this.selectedBooks.includes(b.id));
       }
 
