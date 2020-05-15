@@ -2,7 +2,7 @@
   <section class="section">
     <h1 class="title">History</h1>
 
-    <ReadingHistoryEntry v-for="entry in entries" :key="entry.id" :entry="entry" />
+    <ReadingHistoryEntry v-for="entry in entries" :key="entry.id" :entry="entry" @remove="remove" />
   </section>
 </template>
 
@@ -19,13 +19,18 @@ export default {
 
   methods: {
     updateComponent(route = this.$route) {
+      this.loading = true;
       this.$axios.$get('/reading-history/').then(
         response => {
-          console.log(response);
+          this.loading = false;
           this.entries = response.results;
         }
       );
     },
+    remove(entry){
+      this.loading = true;
+      this.$axios.$delete('/reading-history/'+entry.id+'/').then(() => this.updateComponent());
+    }
   },
 
   beforeMount() {

@@ -24,6 +24,13 @@
               <span>Read Online</span>
             </a>
           </p>
+
+          <p class="control">
+            <button class="button" @click="$emit('remove', entry)">
+              <b-icon icon="delete" />
+              <span>Remove from history</span>
+            </button>
+          </p>
         </div>
       </div>
     </div>
