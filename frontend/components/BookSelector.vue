@@ -42,12 +42,15 @@
               <div>Published on <DateDisplay :date="book.pub_date" /></div>
             </div>
 
-            <div class="field">
+            <div class="field has-addons">
               <p class="control">
                 <button class="button" v-if="!selectedBooks.includes(book.id)" @click="selectBook(book)">
                   <b-icon icon="plus" />
                   <span>Select</span>
                 </button>
+              </p>
+              <p class="control">
+                <a :href="book.read_online_url" target="_blank" class="button"><b-icon icon="book-open-page-variant" /><span>Read online</span></a>
               </p>
             </div>
           </div>
