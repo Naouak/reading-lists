@@ -29,7 +29,9 @@ module.exports = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: [
+    '~/plugins/api',
+  ],
   /*
    ** Nuxt.js dev-modules
    */
@@ -71,7 +73,7 @@ module.exports = {
   },
 
   router: {
-    middleware: ['auth'],
+    middleware: ['auth',],
   },
 
   auth: {

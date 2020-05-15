@@ -118,7 +118,7 @@ export default {
     },
     markAsRead(book) {
       this.loading = true;
-      this.$axios.$post('/book/' + book.id + '/read/', {}).then(() => this.updateComponent());
+      this.$api.bookRead(book).then(() => this.updateComponent());
     },
   },
   beforeMount() {

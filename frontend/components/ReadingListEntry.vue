@@ -2,7 +2,7 @@
   <div class="box">
     <div class="media">
       <div v-if="!condensed" class="media-left">
-        <figure style="width: 70px;">
+        <figure style="width: 128px;">
           <img style="width: auto; height: auto;" :src="entry.book.cover_url" :alt="entry.book.title">
         </figure>
       </div>
@@ -19,15 +19,18 @@
           <div v-if="entry.book.read">Last Read on
             <DateDisplay :date="entry.book.read" />
           </div>
+          <div v-else>
+            <br />
+          </div>
         </div>
-        <div v-else class="content column">
+        <div v-else class="content">
             <b-icon icon="check" class="has-text-success" v-if="entry.book.read" />
             #{{entry.position}}
             -
             {{entry.book.title}}
         </div>
 
-        <div v-if="editMode" class="field has-addons column" style="flex-grow: 0">
+        <div v-if="editMode" class="field has-addons" style="flex-grow: 0">
           <p class="control" v-if="canGoUp">
             <button class="button" @click="$emit('move-up')">
               <b-icon icon="arrow-up-thick" />
@@ -41,7 +44,7 @@
             </button>
           </p>
         </div>
-        <div v-else class="field has-addons column" style="flex-grow: 0">
+        <div v-else class="field has-addons" style="flex-grow: 0">
           <p class="control">
             <a v-if="entry.book.read_online_url" target="_blank" :href="entry.book.read_online_url" class="button">
               <b-icon icon="book-open-page-variant" />

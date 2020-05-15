@@ -16,27 +16,10 @@
       </div>
     </div>
 
-    <section class="">
-
-      <div class="container">
-        <div class="box" v-for="list in readingLists" :key="list.id">
-          <h2 class="subtitle">
-            <nuxt-link :to="{name:'reading-list-id', params: {id: list.id}}">{{list.title}}</nuxt-link>
-          </h2>
-
-          <div class="content" v-if="list.entries.length">
-            <p>
-              Contains {{list.entries.length}} books:
-            </p>
-            <ol>
-              <li v-for="entry in list.entries" :key="entry.id">{{entry.book.title}}</li>
-            </ol>
-          </div>
-          <div class="content" v-else>
-            <p>
-              Contains no books.
-            </p>
-          </div>
+    <section>
+      <div class="container columns is-multiline">
+        <div class="column is-6" v-for="list in readingLists" :key="list.id">
+          <ReadingList  :list="list" @read="markAsRead" />
         </div>
       </div>
     </section>
@@ -44,22 +27,32 @@
 </template>
 
 <script>
+import ReadingList from "~/components/ReadingList";
 export default {
   name: "reading-list",
+  components: {
+    ReadingList,
+  },
   data() {
     return {
       readingLists: [],
     };
   },
   methods: {
-    updateComponent(route) {
+    updateComponent(route = this.$route) {
+      this.loading = true;
       this.$axios.$get(this.getApiUrl()).then(response => {
+        this.loading = false;
         this.readingLists = response.results;
       });
     },
     getApiUrl() {
       return '/reading-list/';
     },
+    markAsRead(book){
+      this.loading = true;
+      this.$api.bookRead(book).then(() => this.updateComponent());
+    }
   },
   beforeMount() {
     this.updateComponent(this.$route);
