@@ -7,7 +7,6 @@
 </template>
 
 <script>
-
 import ReadingHistoryEntry from "~/components/ReadingHistoryEntry";
 export default {
   name: "history",

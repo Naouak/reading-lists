@@ -5,6 +5,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action, permission_classes
 from rest_framework.exceptions import bad_request
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from library.models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory
@@ -19,7 +20,7 @@ def index(request):
 class BookSeriesViewSet(viewsets.ModelViewSet):
     queryset = BookSeries.objects.all().order_by('id')
     serializer_class = BookSeriesSerializer
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -34,7 +35,7 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all().order_by('pub_date')
     serializer_class = BookSerializer
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -58,6 +59,7 @@ class BookViewSet(viewsets.ModelViewSet):
 class ReadingListViewSet(viewsets.ModelViewSet):
     queryset = ReadingList.objects.all().order_by('title')
     serializer_class = ReadingListSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -71,9 +73,9 @@ class ReadingListViewSet(viewsets.ModelViewSet):
 class ReadingHistoryViewSet(viewsets.ModelViewSet):
     queryset = ReadingHistory.objects.all().order_by('-read_date')
     serializer_class = ReadingHistorySerializer
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
 
-@permission_classes((permissions.AllowAny,))
+@permission_classes((IsAuthenticated,))
 class ReadingListEntryViewSet(viewsets.ViewSet):
     def list(self, request, reading_list_pk):
         queryset = ReadingListEntry.objects.filter(reading_list_id=reading_list_pk).order_by('position')

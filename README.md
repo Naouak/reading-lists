@@ -10,9 +10,16 @@ A web app to manage your reading lists.
 cd backend/
 pip -r requirements.txt install
 cp .env.sample .env
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py setup
+
+
 # edit .env with your values
 cd ../frontend/
 npm ci
+cp .env.sample .env
+# edit .evn with your values
 ```
 
 ## Start

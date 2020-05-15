@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 module.exports = {
   mode: 'spa',
   /*
@@ -35,7 +37,8 @@ module.exports = {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/stylelint-module
-    '@nuxtjs/stylelint-module'
+    '@nuxtjs/stylelint-module',
+    '@nuxtjs/dotenv',
   ],
   /*
    ** Nuxt.js modules
@@ -45,6 +48,7 @@ module.exports = {
     'nuxt-buefy',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/auth',
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv'
@@ -64,5 +68,20 @@ module.exports = {
      ** You can extend webpack config here
      */
     extend(config, ctx) {}
-  }
-}
+  },
+
+  router: {
+    middleware: ['auth'],
+  },
+
+  auth: {
+    strategies: {
+      api: {
+        _scheme: 'oauth2',
+        authorization_endpoint: process.env.API_SERVER+'/oauth/authorize/',
+        client_id: process.env.API_OAUTH_CLIENT_ID,
+        scope: ['all'],
+      }
+    }
+  },
+};
