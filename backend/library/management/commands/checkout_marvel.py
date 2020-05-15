@@ -76,7 +76,7 @@ class Command(BaseCommand):
             object.save()
 
     def doComics(self):
-        offset = 30000
+        offset = 0
         limit = 100
         while True:
             print("Checking page %d " % offset)
