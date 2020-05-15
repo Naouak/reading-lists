@@ -37,6 +37,11 @@
               <span>Up</span>
             </button>
           </p>
+          <p class="control" v-if="canGoUp || canGoDown">
+            <button class="button" @click="move">
+              Quick Move
+            </button>
+          </p>
           <p class="control" v-if="canGoDown">
             <button class="button" @click="$emit('move-down')">
               <b-icon icon="arrow-down-thick" />
@@ -92,5 +97,14 @@ export default {
       default: false,
     },
   },
+  methods: {
+    move(){
+      const position = prompt('Move to position?', this.entry.position);
+      if(position === this.entry.position){
+        return;
+      }
+      this.$emit('move', position);
+    }
+  }
 };
 </script>

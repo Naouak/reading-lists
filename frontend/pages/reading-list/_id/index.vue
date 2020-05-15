@@ -35,7 +35,7 @@
                               :edit-mode="editMode" :condensed="condensed"
                               :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
                               @read="markAsRead(entry.book)"
-                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)" />
+                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)" @move="move(entry, $event)"/>
           </div>
         </div>
 
@@ -111,9 +111,10 @@ export default {
       if (position === entry.position) {
         return;
       }
+
       this.loading = true;
       this.$axios.$put('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/', {
-        position
+        position: parseInt(position, 10)
       }).then(() => this.updateComponent());
     },
     markAsRead(book) {
