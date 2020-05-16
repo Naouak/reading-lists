@@ -1,17 +1,25 @@
 <template>
   <section class="section" v-if="readingList">
     <h1 class="title">Reading list: {{readingList.title}}</h1>
-    <div class="field">
-      <label class="checkbox">
-        <input type="checkbox" v-model="editMode">
-        Edit mode
-      </label>
-    </div>
-    <div class="field">
-      <label class="checkbox">
-        <input type="checkbox" v-model="condensed">
-        Condensed mode
-      </label>
+    <div class="columns">
+      <div class="column field">
+        <label class="checkbox">
+          <input type="checkbox" v-model="editMode">
+          Edit mode
+        </label>
+      </div>
+      <div class="column field">
+        <label class="checkbox">
+          <input type="checkbox" v-model="condensed">
+          Condensed mode
+        </label>
+      </div>
+      <div class="column field">
+        <div class="control">
+          <button v-if="readingList.archived" class="button is-danger" @click="archive">Unarchive</button>
+          <button v-else class="button is-danger" @click="archive">Archive</button>
+        </div>
+      </div>
     </div>
 
     <div class="section" v-if="nextEntry && !editMode">
@@ -35,7 +43,8 @@
                               :edit-mode="editMode" :condensed="condensed"
                               :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
                               @read="markAsRead(entry.book)"
-                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)" @move="move(entry, $event)"/>
+                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)"
+                              @move="move(entry, $event)" />
           </div>
         </div>
 
@@ -70,12 +79,12 @@ export default {
       return this.readingList?.entries.filter(e => e.book.read).length;
     },
     progress() {
-      if(this.readingList?.entries.length === 0){
+      if (this.readingList?.entries.length === 0) {
         return 0;
       }
       return this.readEntries / this.readingList?.entries.length * 100;
     },
-    nextEntry(){
+    nextEntry() {
       return this.readingList?.entries?.find((e) => !e.book.read);
     },
   },
@@ -121,11 +130,17 @@ export default {
       this.loading = true;
       this.$api.bookRead(book).then(() => this.updateComponent());
     },
-    remove(entry){
+    remove(entry) {
       this.loading = true;
       this.$axios.$delete('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/')
         .then(() => this.updateComponent());
-    }
+    },
+    archive() {
+      this.loading = true;
+      this.$axios.$patch('/reading-list/' + this.readingListId + '/', {
+        'archived': !this.readingList.archived,
+      }).then(() => this.updateComponent());
+    },
   },
   beforeMount() {
     this.updateComponent(this.$route);

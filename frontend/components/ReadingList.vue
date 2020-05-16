@@ -3,6 +3,7 @@
 
     <h2 class="subtitle">
       <nuxt-link :to="{name:'reading-list-id', params: {id: list.id}}">{{list.title}}</nuxt-link>
+      <span v-if="list.archived">(Archived)</span>
     </h2>
 
     <b-progress :value="read/total*100" show-value type="is-info is-large" format="percent">

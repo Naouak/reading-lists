@@ -44,6 +44,7 @@ class ReadingHistory(models.Model):
 
 class ReadingList(models.Model):
     title = models.CharField(max_length=512)
+    archived = models.BooleanField(default=False)
 
     @property
     def progress(self):

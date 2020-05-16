@@ -64,9 +64,12 @@ class ReadingListViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search = self.request.query_params.get('search', None)
-
         if search is not None:
             queryset = queryset.filter(title__contains=search)
+
+        archived = self.request.query_params.get('archived', None)
+        if archived:
+            queryset = queryset.filter(archived=archived)
 
         return queryset
 
