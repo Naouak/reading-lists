@@ -19,16 +19,13 @@ export default {
 
   methods: {
     updateComponent(route = this.$route) {
-      this.loading = true;
       this.$axios.$get('/reading-history/').then(
         response => {
-          this.loading = false;
           this.entries = response.results;
         }
       );
     },
     remove(entry){
-      this.loading = true;
       this.$axios.$delete('/reading-history/'+entry.id+'/').then(() => this.updateComponent());
     }
   },

@@ -51,15 +51,14 @@ export default {
   },
   methods: {
     updateComponent(route = this.$route) {
-      this.loading = true;
-      this.$axios.$get(this.getApiUrl()).then(response => {
-        this.loading = false;
+      this.readingLists = [];
+      this.$axios.$get(this.getApiUrl(route)).then(response => {
         this.readingLists = response.results;
       });
     },
-    getApiUrl() {
+    getApiUrl(route = this.$route) {
       const params = [];
-      if (this.$route.query.archived === 1) {
+      if (parseInt(route.query.archived) === 1) {
         params.push(['archived', '1']);
       } else {
         params.push(['archived', '0']);
@@ -69,7 +68,6 @@ export default {
       return '/reading-list/?' + queryString;
     },
     markAsRead(book) {
-      this.loading = true;
       this.$api.bookRead(book).then(() => this.updateComponent());
     }
   },

@@ -92,18 +92,15 @@ export default {
   methods: {
     updateComponent(route = this.$route) {
       this.readingListId = route.params.id;
-      this.loading = true;
 
       this.$axios.$get(this.getApiUrl()).then(response => {
         this.readingList = response;
-        this.loading = false;
       });
     },
     getApiUrl() {
       return '/reading-list/' + this.readingListId + '/';
     },
     bookSelected(book) {
-      this.loading = true;
       this.$axios.$post('/reading-list/' + this.readingListId + '/entries/', {
         book: book.id
       }).then(() => {
@@ -121,22 +118,18 @@ export default {
         return;
       }
 
-      this.loading = true;
       this.$axios.$put('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/', {
         position: parseInt(position, 10)
       }).then(() => this.updateComponent());
     },
     markAsRead(book) {
-      this.loading = true;
       this.$api.bookRead(book).then(() => this.updateComponent());
     },
     remove(entry) {
-      this.loading = true;
       this.$axios.$delete('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/')
         .then(() => this.updateComponent());
     },
     archive() {
-      this.loading = true;
       this.$axios.$patch('/reading-list/' + this.readingListId + '/', {
         'archived': !this.readingList.archived,
       }).then(() => this.updateComponent());
