@@ -77,6 +77,7 @@ module.exports = {
   },
 
   auth: {
+    resetOnError: true,
     strategies: {
       api: {
         _scheme: 'oauth2',
