@@ -63,6 +63,7 @@ class ReadingListViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.prefetch_related('entries__book')
         search = self.request.query_params.get('search', None)
         if search is not None:
             queryset = queryset.filter(title__contains=search)
