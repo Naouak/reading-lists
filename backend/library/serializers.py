@@ -7,6 +7,7 @@ class BookSeriesSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'book_count', 'cover_url']
 
 class BookSerializer(serializers.ModelSerializer):
+    read = serializers.DateTimeField(read_only=True)
     class Meta:
         model = Book
         fields = ['id', 'external_id', 'cover_url', 'pub_date', 'read_online_url', 'series', 'title', 'type', 'read']

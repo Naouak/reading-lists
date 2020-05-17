@@ -3,6 +3,8 @@ from django.db import models
 # Create your models here.
 from django.db.models import Max
 
+from django.core.cache import cache
+
 
 class BookSeries(models.Model):
     title = models.CharField(max_length=512)
@@ -33,14 +35,30 @@ class Book(models.Model):
 
     @property
     def read(self):
-        return ReadingHistory.objects.filter(book_id=self.id).aggregate(Max('read_date'))['read_date__max']
+        cache_key='book-read:'+str(self.id)
+        value = cache.get(cache_key)
+        if value is None:
+            value = ReadingHistory.objects.filter(book_id=self.id).aggregate(Max('read_date'))['read_date__max']
+            cache.set(cache_key, value, 3600)
+        return value
 
     def __str__(self):
         return self.title
 
 class ReadingHistory(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, related_name='reading_history', on_delete=models.CASCADE)
     read_date = models.DateTimeField(auto_now_add=True, blank=True)
+
+    def invalidate_book_cache(self):
+        cache.delete('book-read:'+str(self.book_id))
+
+    def save(self, *args, **kwargs):
+        self.invalidate_book_cache()
+        return super().save(*args, **kwargs)
+
+    def delete(self, using=None, keep_parents=False):
+        self.invalidate_book_cache()
+        return super().delete(using=using, keep_parents=keep_parents)
 
 class ReadingList(models.Model):
     title = models.CharField(max_length=512)
