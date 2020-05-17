@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Max
 
 from django.core.cache import cache
+from django.utils.functional import cached_property
 
 
 class BookSeries(models.Model):
@@ -33,7 +34,7 @@ class Book(models.Model):
     type = models.CharField(max_length=64, default='Novel')
     external_id = models.CharField(max_length=256, null=True)
 
-    @property
+    @cached_property
     def read(self):
         cache_key='book-read:'+str(self.id)
         value = cache.get(cache_key)
@@ -63,10 +64,6 @@ class ReadingHistory(models.Model):
 class ReadingList(models.Model):
     title = models.CharField(max_length=512)
     archived = models.BooleanField(default=False)
-
-    @property
-    def progress(self):
-        return len([e for e in self.entries.all() if e.book.read is not None])
 
     def __str__(self):
         return self.title
