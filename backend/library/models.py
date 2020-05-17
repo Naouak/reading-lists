@@ -2,9 +2,8 @@ from django.db import models
 
 # Create your models here.
 from django.db.models import Max
-
-from django.core.cache import cache
-from django.utils.functional import cached_property
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 
 class BookSeries(models.Model):
@@ -34,32 +33,38 @@ class Book(models.Model):
     type = models.CharField(max_length=64, default='Novel')
     external_id = models.CharField(max_length=256, null=True)
 
-    @cached_property
-    def read(self):
-        cache_key='book-read:'+str(self.id)
-        value = cache.get(cache_key)
-        if value is None:
-            value = ReadingHistory.objects.filter(book_id=self.id).aggregate(Max('read_date'))['read_date__max']
-            cache.set(cache_key, value, 3600)
-        return value
-
     def __str__(self):
         return self.title
+
+class BookReadingHistory(models.Model):
+    book = models.OneToOneField(Book, related_name='last_read_history', on_delete=models.CASCADE)
+    read_date = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.read_date = ReadingHistory.objects.filter(book_id=self.book_id).aggregate(Max('read_date'))[
+            'read_date__max']
+        super().save(*args, **kwargs)
+
 
 class ReadingHistory(models.Model):
     book = models.ForeignKey(Book, related_name='reading_history', on_delete=models.CASCADE)
     read_date = models.DateTimeField(auto_now_add=True, blank=True)
 
-    def invalidate_book_cache(self):
-        cache.delete('book-read:'+str(self.book_id))
+    def update_history(self):
+        try:
+            data = BookReadingHistory.objects.get(book_id=self.book_id)
+        except:
+            data = BookReadingHistory(book_id=self.book_id)
+        data.save()
+        pass
 
     def save(self, *args, **kwargs):
-        self.invalidate_book_cache()
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
+        self.update_history()
 
-    def delete(self, using=None, keep_parents=False):
-        self.invalidate_book_cache()
-        return super().delete(using=using, keep_parents=keep_parents)
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self.update_history()
 
 class ReadingList(models.Model):
     title = models.CharField(max_length=512)

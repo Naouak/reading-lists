@@ -1,4 +1,4 @@
-from .models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory
+from .models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory
 from rest_framework import serializers
 
 class BookSeriesSerializer(serializers.ModelSerializer):
@@ -6,11 +6,16 @@ class BookSeriesSerializer(serializers.ModelSerializer):
         model = BookSeries
         fields = ['id', 'title', 'book_count', 'cover_url']
 
+class BookReadingHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookReadingHistory
+        fields = '__all__'
+
 class BookSerializer(serializers.ModelSerializer):
-    read = serializers.DateTimeField(read_only=True)
+    last_read_history = BookReadingHistorySerializer(read_only=True)
     class Meta:
         model = Book
-        fields = ['id', 'external_id', 'cover_url', 'pub_date', 'read_online_url', 'series', 'title', 'type', 'read']
+        fields = ['id', 'external_id', 'cover_url', 'pub_date', 'read_online_url', 'series', 'title', 'type', 'last_read_history']
 
 class ReadingHistorySerializer(serializers.ModelSerializer):
     class Meta:

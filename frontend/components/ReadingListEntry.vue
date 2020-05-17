@@ -9,22 +9,22 @@
       <div class="media-content" :class="{'columns': condensed}">
         <div v-if="!condensed" class="content">
           <div class="title">
-            <b-icon icon="check" class="has-text-success" v-if="entry.book.read" />
+            <b-icon icon="check" class="has-text-success" v-if="entry.book.last_read_history" />
             #{{entry.position}}
           </div>
           <div class="subtitle">{{entry.book.title}}</div>
           <div>Published on
             <DateDisplay :date="entry.book.pub_date" />
           </div>
-          <div v-if="entry.book.read">Last Read on
-            <DateDisplay :date="entry.book.read" />
+          <div v-if="entry.book.last_read_history">Last Read on
+            <DateDisplay :date="entry.book.last_read_history.read_date" />
           </div>
           <div v-else>
             <br />
           </div>
         </div>
         <div v-else class="content">
-            <b-icon icon="check" class="has-text-success" v-if="entry.book.read" />
+            <b-icon icon="check" class="has-text-success" v-if="entry.book.last_read_history" />
             #{{entry.position}}
             -
             {{entry.book.title}}
@@ -65,7 +65,7 @@
           <p class="control">
             <button class="button" @click="$emit('read')">
               <b-icon icon="check" />
-              <span>Mark as read <span v-if="entry.book.read">again</span></span>
+              <span>Mark as read <span v-if="entry.book.last_read_history">again</span></span>
             </button>
           </p>
         </div>

@@ -76,7 +76,7 @@ export default {
       return this.readingList?.entries.map(e => e.book.id);
     },
     readEntries() {
-      return this.readingList?.entries.filter(e => e.book.read).length;
+      return this.readingList?.entries.filter(e => e.book.last_read_history && e.book.last_read_history.read_date).length;
     },
     progress() {
       if (this.readingList?.entries.length === 0) {
@@ -85,7 +85,7 @@ export default {
       return this.readEntries / this.readingList?.entries.length * 100;
     },
     nextEntry() {
-      return this.readingList?.entries?.find((e) => !e.book.read);
+      return this.readingList?.entries?.find((e) => !e.book.last_read_history || !e.book.last_read_history.read_date);
     },
   },
   loading: true,

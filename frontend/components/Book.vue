@@ -12,8 +12,8 @@
           <div>Published on
             <DateDisplay :date="book.pub_date" />
           </div>
-          <div v-if="book.read">Last read on
-            <DateDisplay :date="book.read" />
+          <div v-if="book.last_read_history">Last read on
+            <DateDisplay :date="book.last_read_history.read_date" />
           </div>
           <div v-else>Not read yet</div>
         </div>

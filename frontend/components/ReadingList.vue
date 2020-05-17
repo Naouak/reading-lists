@@ -40,7 +40,7 @@ export default {
   },
   computed: {
     read() {
-      return this.list.entries.filter(e => e.book.read).length;
+      return this.list.entries.filter(e => e.book.last_read_history && e.book.last_read_history.read_date).length;
     },
     total() {
       return this.list.entries.length;
@@ -49,7 +49,7 @@ export default {
       return this.list.entries?.[0];
     },
     next() {
-      return this.list.entries.find(e => !e.book.read);
+      return this.list.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date);
     },
   },
 }
