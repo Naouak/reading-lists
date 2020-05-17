@@ -24,12 +24,12 @@ export default {
   },
   methods: {
     updateComponent(route = this.$route){
-      this.$axios.$get('/book/?limit=50&ordering=-id').then(
+      this.$axios.$get('/book/?limit=50&ordering=-availability_date').then(
         response => {
           this.recentBooks = response.results
         }
       );
-      this.$axios.$get('/book/?limit=50&ordering=-pub_date').then(
+      this.$axios.$get('/book/?limit=50&ordering=-pub_date,title').then(
         response => {
           this.newBooks = response.results
         }
