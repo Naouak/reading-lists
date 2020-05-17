@@ -29,6 +29,7 @@ class Book(models.Model):
     cover_url = models.URLField('URL for cover art', null=True)
     read_online_url = models.URLField('URL to read online', null=True)
     pub_date = models.DateTimeField('date published')
+    availability_date = models.DateTimeField('date it was made available', null=True)
     series = models.ForeignKey(BookSeries, null=True, on_delete=models.SET_NULL)
     type = models.CharField(max_length=64, default='Novel')
     external_id = models.CharField(max_length=256, null=True)

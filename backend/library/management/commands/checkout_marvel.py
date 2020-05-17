@@ -63,6 +63,7 @@ class Command(BaseCommand):
             object.read_online_url = "https://read.marvel.com/#/book/%s" % book.digital_id
             # pub_date
             object.pub_date = book.dates.on_sale
+            object.availability_date = book.dates.unlimited
             # series
             if book.series:
                 series_id = book.series.id

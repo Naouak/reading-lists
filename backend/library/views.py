@@ -1,7 +1,7 @@
 from django.db.models import F, Max
 from django.http import HttpResponse
 
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action, permission_classes
 from rest_framework.exceptions import bad_request
 from rest_framework.generics import get_object_or_404
@@ -36,6 +36,7 @@ class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all().order_by('pub_date')
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
 
     def get_queryset(self):
         queryset = super().get_queryset()
