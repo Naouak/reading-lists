@@ -4,7 +4,7 @@
 
     <div class="section" v-for="h in history" :key="h.date">
       <h2 class="title">
-        {{h.date}}
+        <RelativeDateDisplay :date="h.date" /> ({{h.entries.length}} entries)
       </h2>
       <ReadingHistoryEntry v-for="entry in h.entries" :key="entry.id" :entry="entry" @remove="remove" />
     </div>
@@ -14,9 +14,10 @@
 
 <script>
 import ReadingHistoryEntry from "~/components/ReadingHistoryEntry";
+import RelativeDateDisplay from "~/components/RelativeDateDisplay";
 export default {
   name: "history",
-  components: {ReadingHistoryEntry},
+  components: {RelativeDateDisplay, ReadingHistoryEntry},
   data() {
     return {
       entries: [],
