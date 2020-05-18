@@ -2,6 +2,7 @@
   <div class="box">
 
     <h2 class="subtitle">
+      <b-icon v-if="list.series.length" icon="autorenew" title="This reading list is automatically filled with new releases." />
       <nuxt-link :to="{name:'reading-list-id', params: {id: list.id}}">{{list.title}}</nuxt-link>
       <span v-if="list.archived">(Archived)</span>
     </h2>
