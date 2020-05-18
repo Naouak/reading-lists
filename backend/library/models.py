@@ -71,9 +71,21 @@ class ReadingHistory(models.Model):
 class ReadingList(models.Model):
     title = models.CharField(max_length=512)
     archived = models.BooleanField(default=False)
+    series = models.ManyToManyField(BookSeries, related_name='reading_lists')
 
     def __str__(self):
         return self.title
+
+@receiver(post_save, sender=Book)
+def add_new_entry_to_reading_lists(sender, instance, created, **kwargs):
+    """Adds new books to reading lists that follow a series"""
+    if not created or instance.series_id is None:
+        return
+    reading_lists = ReadingList.objects.filter(series__id=instance.series_id)
+    for reading_list in reading_lists:
+        position = reading_list.entries.aggregate(Max('position'))['position__max']+1 or 1
+        ReadingListEntry(book=instance, reading_list=reading_list, position=position).save()
+
 
 class ReadingListEntry(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)

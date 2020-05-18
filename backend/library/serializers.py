@@ -32,6 +32,7 @@ class ReadingListEntrySerializer(serializers.ModelSerializer):
 
 class ReadingListSerializer(serializers.ModelSerializer):
     entries = ReadingListEntrySerializer(many=True, read_only=True, )
+    series = BookSeriesSerializer(many=True, read_only=True, )
     class Meta:
         model = ReadingList
-        fields = ['id', 'title', 'entries', 'archived']
+        fields = ['id', 'title', 'entries', 'series', 'archived']

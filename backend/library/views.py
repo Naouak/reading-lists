@@ -145,3 +145,28 @@ class ReadingListEntryViewSet(viewsets.ViewSet):
         entry.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@permission_classes((IsAuthenticated,))
+class ReadingListSeriesViewSet(viewsets.ViewSet):
+    def list(self, request, reading_list_pk):
+        queryset = ReadingListEntry.objects.filter(reading_list_id=reading_list_pk).order_by('position')
+        serializer = ReadingListEntrySerializer(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def retrieve(self, request, reading_list_pk, pk=None):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def create(self, request, reading_list_pk):
+        if request.data['series_id'] is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        series = get_object_or_404(BookSeries.objects, pk=request.data['series_id'])
+        ReadingList.objects.get(pk=reading_list_pk).series.add(series)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request, reading_list_pk, pk=None):
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def destroy(self, request, reading_list_pk, pk=None):
+        series = get_object_or_404(BookSeries.objects, pk=pk)
+        ReadingList.objects.get(pk=reading_list_pk).series.remove(series)
+        return Response(status=status.HTTP_204_NO_CONTENT)

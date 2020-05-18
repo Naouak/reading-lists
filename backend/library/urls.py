@@ -12,6 +12,7 @@ router.register(r'reading-history', views.ReadingHistoryViewSet)
 
 reading_list_router = routers.NestedSimpleRouter(router, r'reading-list', lookup='reading_list')
 reading_list_router.register(r'entries', views.ReadingListEntryViewSet, basename='reading-list-entries')
+reading_list_router.register(r'series', views.ReadingListSeriesViewSet, basename='reading-list-series')
 
 urlpatterns = [
     path('', include(router.urls)),
