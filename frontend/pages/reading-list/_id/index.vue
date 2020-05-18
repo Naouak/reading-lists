@@ -1,6 +1,7 @@
 <template>
   <section class="section" v-if="readingList">
     <h1 class="title">Reading list: {{readingList.title}}</h1>
+
     <div class="columns">
       <div class="column field">
         <label class="checkbox">
@@ -22,13 +23,30 @@
       </div>
     </div>
 
-    <div class="section" v-if="nextEntry && !editMode">
+
+    <div style="margin-bottom: 24px;" v-if="nextEntry && !editMode">
       <h2 class="title">Next Title to read</h2>
       <ReadingListEntry :entry="nextEntry" @read="markAsRead(nextEntry.book)" />
     </div>
 
     <div class="columns">
       <div class="column" :class="{'is-6':editMode}">
+        <div v-if="readingList.series.length" class="card" style="margin-bottom: 24px;">
+          <div class="card-header">
+            <div class="card-header-title">Auto-fill Series</div>
+          </div>
+          <div v-if="!editMode" class="card-content">
+            {{seriesNames}}
+          </div>
+          <div v-else class="card-content is-flex" v-for="series in readingList.series" :key="series.id" style="justify-content: space-between; padding: .6rem 1.5rem;">
+            <span style="line-height: 36px;">{{series.title}}</span>
+            <button v-if="editMode" class="button is-pulled-right" @click="removeSeries(series)">
+              <b-icon icon="delete" />
+              <span>Remove</span>
+            </button>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-header">
             <div class="card-header-title">In the list ({{readingList.entries.length}} books)</div>
@@ -51,7 +69,16 @@
 
       </div>
       <div v-if="editMode" class="column is-6">
-        <BookSelector :selected-books="selectedBookIds" @book-selected="bookSelected" />
+        <b-tabs v-model="activeTab" class="card">
+          <b-tab-item label="Add Books">
+            <BookSelector :selected-books="selectedBookIds" @book-selected="bookSelected" />
+          </b-tab-item>
+          <b-tab-item label="Add Series">
+            <SeriesSelector :selected-series="selectedSeriesIds" @series-selected="addSeries" />
+          </b-tab-item>
+        </b-tabs>
+
+
       </div>
     </div>
   </section>
@@ -59,10 +86,11 @@
 <script>
 import BookSelector from "~/components/BookSelector";
 import ReadingListEntry from "~/components/ReadingListEntry";
+import SeriesSelector from "~/components/SeriesSelector";
 
 export default {
   name: "readingListDetails",
-  components: {ReadingListEntry, BookSelector},
+  components: {SeriesSelector, ReadingListEntry, BookSelector},
   data() {
     return {
       readingListId: null,
@@ -74,6 +102,9 @@ export default {
   computed: {
     selectedBookIds() {
       return this.readingList?.entries.map(e => e.book.id);
+    },
+    selectedSeriesIds() {
+      return this.readingList?.series.map(s => s.id);
     },
     readEntries() {
       return this.readingList?.entries.filter(e => e.book.last_read_history && e.book.last_read_history.read_date).length;
@@ -87,6 +118,9 @@ export default {
     nextEntry() {
       return this.readingList?.entries?.find((e) => !e.book.last_read_history || !e.book.last_read_history.read_date);
     },
+    seriesNames() {
+      return this.readingList?.series.map(s => s.title).join(', ');
+    }
   },
   loading: true,
   methods: {
@@ -133,6 +167,15 @@ export default {
       this.$axios.$patch('/reading-list/' + this.readingListId + '/', {
         'archived': !this.readingList.archived,
       }).then(() => this.updateComponent());
+    },
+    addSeries(series) {
+      this.$axios.$post('/reading-list/' + this.readingListId + '/series/', {
+        series_id: series.id,
+      }).then(() => this.updateComponent());
+    },
+    removeSeries(series) {
+      this.$axios.$delete('/reading-list/' + this.readingListId + '/series/' + series.id + '/')
+        .then(() => this.updateComponent());
     },
   },
   beforeMount() {
