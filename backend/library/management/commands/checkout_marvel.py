@@ -55,6 +55,7 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(self.style.SUCCESS('Importing comic "%s"' % book.title))
                 object = Book(external_id=book.id, type='comic')
+            object.external_source = 'marvel'
             object.title = book.title
             # cover_url
             if len(book.images) > 0:

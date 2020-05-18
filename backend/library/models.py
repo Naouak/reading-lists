@@ -32,6 +32,7 @@ class Book(models.Model):
     availability_date = models.DateTimeField('date it was made available', null=True)
     series = models.ForeignKey(BookSeries, null=True, on_delete=models.SET_NULL)
     type = models.CharField(max_length=64, default='Novel')
+    external_source = models.CharField(max_length=32, null=True)
     external_id = models.CharField(max_length=256, null=True)
 
     def __str__(self):
