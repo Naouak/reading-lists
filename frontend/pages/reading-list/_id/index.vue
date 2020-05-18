@@ -1,28 +1,17 @@
 <template>
   <section class="section" v-if="readingList">
-    <h1 class="title">Reading list: {{readingList.title}}</h1>
-
-    <div class="columns">
-      <div class="column field">
-        <label class="checkbox">
-          <input type="checkbox" v-model="editMode">
-          Edit mode
-        </label>
-      </div>
-      <div class="column field">
-        <label class="checkbox">
-          <input type="checkbox" v-model="condensed">
-          Condensed mode
-        </label>
-      </div>
+    <div class="columns is-pulled-right">
       <div class="column field">
         <div class="control">
+          <button v-if="!editMode" @click="editMode=!editMode" class="button is-primary">Edit</button>
+          <button v-else @click="editMode=!editMode" class="button is-primary">End Edit</button>
           <button v-if="readingList.archived" class="button is-danger" @click="archive">Unarchive</button>
           <button v-else class="button is-danger" @click="archive">Archive</button>
         </div>
       </div>
     </div>
 
+    <h1 class="title is-clearfix">Reading list: {{readingList.title}}</h1>
 
     <div style="margin-bottom: 24px;" v-if="nextEntry && !editMode">
       <h2 class="title">Next Title to read</h2>
@@ -58,7 +47,7 @@
           </div>
           <div class="card-content">
             <ReadingListEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
-                              :edit-mode="editMode" :condensed="condensed"
+                              :edit-mode="editMode"
                               :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
                               @read="markAsRead(entry.book)"
                               @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)"
@@ -96,7 +85,6 @@ export default {
       readingListId: null,
       readingList: null,
       editMode: false,
-      condensed: false,
     };
   },
   computed: {
