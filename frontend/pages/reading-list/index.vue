@@ -53,7 +53,25 @@ export default {
     updateComponent(route = this.$route) {
       this.readingLists = [];
       this.$axios.$get(this.getApiUrl(route)).then(response => {
-        this.readingLists = response.results;
+        this.readingLists = response.results.sort(
+          (a, b) => {
+            const nextA = a.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date);
+            const nextB = b.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date);
+
+            if(!nextA){
+              return 1;
+            }
+
+            if(!nextB){
+              return -1;
+            }
+
+            const dateA = new Date(nextA.book.pub_date).getTime();
+            const dateB = new Date(nextB.book.pub_date).getTime();
+
+            return dateA >= dateB ? 1 : -1;
+          }
+        );
       });
     },
     getApiUrl(route = this.$route) {
