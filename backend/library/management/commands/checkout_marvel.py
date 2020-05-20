@@ -1,10 +1,5 @@
-import os
-
 from django.core.management import BaseCommand
-from django.utils.dateparse import parse_datetime
-import json
 from library.models import BookSeries, Book
-from os import walk
 
 from library.utils.marvel_api import get_client
 
