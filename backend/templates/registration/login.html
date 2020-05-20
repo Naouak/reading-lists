@@ -1,8 +1,66 @@
 <!-- templates/registration/login.html -->
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="hidden" name="next" value="{{ next }}" />
-    <button type="submit">Login</button>
-</form>
+<style>
+    html {
+        font-family: sans-serif;
+        background: #363636;
+    }
+
+    .container {
+        margin: 24px auto;
+        max-width: 400px;
+        border: solid grey 1px;
+        padding: 24px;
+        font-size: 1.2rem;
+        background: white;
+        color: #363636;
+    }
+
+    h1 {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        padding: 24px 0 6px;
+    }
+
+    input {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        font-size: 1.2rem;
+        color: #363636;
+    }
+
+    .button-line {
+        text-align: right;
+        margin-top: 36px;
+    }
+
+    button {
+        padding: 12px 24px;
+        background: white;
+        border: solid grey 1px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover{
+        background: #363636;
+        color: white;
+    }
+</style>
+
+<div class="container">
+    <h1>LOGIN</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="hidden" name="next" value="{{ next }}" />
+        <div class="button-line">
+            <button type="submit">Login</button>
+        </div>
+    </form>
+</div>
