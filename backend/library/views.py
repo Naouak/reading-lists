@@ -47,7 +47,7 @@ class BookViewSet(viewsets.ModelViewSet):
         external_id = self.request.query_params.get('external_id', None)
 
         if external_source is not None:
-            # queryset = queryset.filter(external_source=external_source)
+            queryset = queryset.filter(external_source=external_source)
             if external_id is not None:
                 queryset = queryset.filter(external_id=external_id)
 
