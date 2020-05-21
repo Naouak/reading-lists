@@ -43,6 +43,14 @@ class BookViewSet(viewsets.ModelViewSet):
         series = self.request.query_params.get('series', None)
         search = self.request.query_params.get('search', None)
 
+        external_source = self.request.query_params.get('external_source', None)
+        external_id = self.request.query_params.get('external_id', None)
+
+        if external_source is not None:
+            # queryset = queryset.filter(external_source=external_source)
+            if external_id is not None:
+                queryset = queryset.filter(external_id=external_id)
+
         if series is not None:
             queryset = queryset.filter(series_id=series)
         if search is not None:
