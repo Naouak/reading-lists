@@ -69,6 +69,11 @@ export default {
           title: 'History',
           icon: 'history',
           to: {name: 'history'}
+        },
+        {
+          title: 'Statistics',
+          icon: 'chart-line',
+          to: {name: 'statistics'}
         }
       ],
     };

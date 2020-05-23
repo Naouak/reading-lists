@@ -1,14 +1,17 @@
+from datetime import timedelta
+
 from django.db.models import F, Max
 from django.http import HttpResponse
+from django.utils.datetime_safe import datetime
 
 from rest_framework import viewsets, permissions, status, filters
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action, permission_classes, api_view
 from rest_framework.exceptions import bad_request
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from library.models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory
+from library.models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory
 from library.serializers import BookSeriesSerializer, BookSerializer, ReadingListSerializer, ReadingListEntrySerializer, \
     ReadingHistorySerializer
 
@@ -178,3 +181,27 @@ class ReadingListSeriesViewSet(viewsets.ViewSet):
         series = get_object_or_404(BookSeries.objects, pk=pk)
         ReadingList.objects.get(pk=reading_list_pk).series.remove(series)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def statistics(request):
+    stats = {}
+
+    stats['total_books'] = Book.objects.count()
+    stats['read_books'] = BookReadingHistory.objects.count()
+
+    current_date = datetime.today()
+    last_week = current_date - timedelta(days=7)
+    previous_week = last_week - timedelta(days=7)
+    last_month = current_date - timedelta(days=30)
+    previous_month = last_month - timedelta(days=30)
+    stats['read_last_week'] = BookReadingHistory.objects.filter(read_date__gte=last_week).count()
+    stats['read_previous_week'] = BookReadingHistory.objects.filter(read_date__gte=previous_week, read_date__lt=last_week).count()
+    stats['read_last_month'] = BookReadingHistory.objects.filter(read_date__gte=last_month).count()
+    stats['read_previous_month'] = BookReadingHistory.objects.filter(read_date__gte=previous_month, read_date__lt=last_month).count()
+
+    stats['added_last_week'] = Book.objects.filter(availability_date__gte=last_week).count()
+    stats['added_previous_week'] = Book.objects.filter(availability_date__gte=previous_week, availability_date__lt=last_week).count()
+    stats['added_last_month'] = Book.objects.filter(availability_date__gte=last_month).count()
+    stats['added_previous_month'] = Book.objects.filter(availability_date__gte=previous_month, availability_date__lt=last_month).count()
+
+    return Response(stats)
