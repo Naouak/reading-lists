@@ -4,7 +4,7 @@
     <div class="box">
       <h2 class="subtitle">Total Progress</h2>
       <b-progress :value="read_progress" show-value type="is-info is-large" format="percent">
-        {{stats.read_books}} / {{stats.total_books}} read ({{read_progress}})
+        {{stats.read_books}} / {{stats.total_books}} read ({{read_progress}}%)
       </b-progress>
     </div>
 
@@ -76,8 +76,7 @@ export default {
       return progress + "%";
     },
     read_progress() {
-      const progress = ((this.stats.read_books / this.stats.total_books * 10000) | 0) / 100;
-      return progress + "%";
+      return ((this.stats.read_books / this.stats.total_books * 10000) | 0) / 100;
     },
   },
   asyncData({$axios}) {
