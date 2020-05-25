@@ -48,28 +48,28 @@ export default {
   name: "statistics",
   computed: {
     read_last_week_progress() {
-      let progress = (this.stats.read_last_week / (this.stats.read_previous_week || this.stats.read_last_week || 1) * 100) | 0;
+      let progress = (this.stats.read_last_week / (this.stats.read_previous_week || this.stats.read_last_week || 1) * 100 - 100) | 0;
       if (progress >= 0) {
         progress = "+" + progress;
       }
       return progress + "%";
     },
     read_last_month_progress() {
-      let progress = (this.stats.read_last_month / (this.stats.read_previous_month || this.stats.read_last_month || 1) * 100) | 0;
+      let progress = (this.stats.read_last_month / (this.stats.read_previous_month || this.stats.read_last_month || 1) * 100 - 100) | 0;
       if (progress >= 0) {
         progress = "+" + progress;
       }
       return progress + "%";
     },
     added_last_week_progress() {
-      let progress = (this.stats.added_last_week / (this.stats.added_previous_week || this.stats.added_last_week || 1) * 100) | 0;
+      let progress = (this.stats.added_last_week / (this.stats.added_previous_week || this.stats.added_last_week || 1) * 100 - 100) | 0;
       if (progress >= 0) {
         progress = "+" + progress;
       }
       return progress + "%";
     },
     added_last_month_progress() {
-      let progress = (this.stats.added_last_month / (this.stats.added_previous_month || this.stats.added_last_month || 1) * 100) | 0;
+      let progress = (this.stats.added_last_month / (this.stats.added_previous_month || this.stats.added_last_month || 1) * 100 - 100) | 0;
       if (progress >= 0) {
         progress = "+" + progress;
       }
