@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.db.models import F, Max
 from django.http import HttpResponse
+from django.utils.dateparse import parse_datetime
 from django.utils.datetime_safe import datetime
 
 from rest_framework import viewsets, permissions, status, filters
@@ -64,6 +65,13 @@ class BookViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True)
     def read(self, request, pk=None):
         history = ReadingHistory(book_id=pk)
+
+        read_date = request.data['read_date'] if 'read_date' in request.data else None
+        history.save()
+
+        if read_date:
+            history.read_date = parse_datetime(read_date)
+
         history.save()
         serializer = ReadingHistorySerializer(history)
         return Response(serializer.data)

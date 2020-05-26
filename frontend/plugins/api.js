@@ -3,8 +3,12 @@ class Api {
     this.$axios = $axios;
   }
 
-  bookRead(book) {
-    return this.$axios.$post('/book/' + book.id + '/read/', {});
+  bookRead(book, readDate = null) {
+    const data = {};
+    if (readDate) {
+      data.read_date = readDate;
+    }
+    return this.$axios.$post('/book/' + book.id + '/read/', data);
   }
 }
 

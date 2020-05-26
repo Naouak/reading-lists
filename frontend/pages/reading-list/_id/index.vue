@@ -7,6 +7,8 @@
           <button v-else @click="editMode=!editMode" class="button is-primary">End Edit</button>
           <button v-if="readingList.archived" class="button is-danger" @click="archive">Unarchive</button>
           <button v-else class="button is-danger" @click="archive">Archive</button>
+          <button v-if="!enableReadBefore" class="button is-primary" @click="enableReadBefore=!enableReadBefore">Enable Read Before</button>
+          <button v-else class="button is-primary" @click="enableReadBefore=!enableReadBefore">Disable Read Before</button>
         </div>
       </div>
     </div>
@@ -47,9 +49,10 @@
           </div>
           <div class="card-content">
             <ReadingListEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
+                              :enable-read-before="enableReadBefore"
                               :edit-mode="editMode"
                               :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
-                              @read="markAsRead(entry.book)"
+                              @read="markAsRead(entry.book)" @read-before="markAsReadBefore(entry.book)"
                               @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)"
                               @move="move(entry, $event)" />
           </div>
@@ -85,6 +88,7 @@ export default {
       readingListId: null,
       readingList: null,
       editMode: false,
+      enableReadBefore: false,
     };
   },
   computed: {
@@ -146,6 +150,10 @@ export default {
     },
     markAsRead(book) {
       this.$api.bookRead(book).then(() => this.updateComponent());
+    },
+    markAsReadBefore(book) {
+      // Just put them as read some time before the tool was developed
+      this.$api.bookRead(book, '2020-02-01T00:00:00Z').then(() => this.updateComponent());
     },
     remove(entry) {
       this.$axios.$delete('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/')

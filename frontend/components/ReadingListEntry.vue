@@ -68,6 +68,14 @@
               <span>Mark as read <span v-if="entry.book.last_read_history">again</span></span>
             </button>
           </p>
+
+          <p class="control" v-if="enableReadBefore && !entry.book.last_read_history">
+            <button class="button" @click="$emit('read-before')">
+              <b-icon icon="check"/>
+              <span>Mark as read before</span>
+            </button>
+          </p>
+
         </div>
       </div>
     </div>
@@ -94,6 +102,9 @@ export default {
       default: false,
     },
     condensed: {
+      default: false,
+    },
+    enableReadBefore: {
       default: false,
     },
   },
