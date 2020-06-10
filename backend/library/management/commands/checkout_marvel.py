@@ -78,7 +78,7 @@ class Command(BaseCommand):
         while True:
             print("Checking page %d " % offset)
             comics = self.api_client.comics({
-                'orderBy': 'modified',
+                'orderBy': '-modified',
                 'limit': limit,
                 'offset': offset,
             })
