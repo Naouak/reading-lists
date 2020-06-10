@@ -74,7 +74,12 @@ export default {
           title: 'Statistics',
           icon: 'chart-line',
           to: {name: 'statistics'}
-        }
+        },
+        {
+          title: 'Completion Stats',
+          icon: 'chart-line',
+          to: {name: 'completion'}
+        },
       ],
     };
   },
