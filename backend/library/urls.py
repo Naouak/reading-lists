@@ -17,5 +17,6 @@ reading_list_router.register(r'series', views.ReadingListSeriesViewSet, basename
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(reading_list_router.urls)),
-    path('reading-statistics/', views.statistics)
+    path('reading-statistics/', views.statistics),
+    path('completion-statistics/', views.completion)
 ]

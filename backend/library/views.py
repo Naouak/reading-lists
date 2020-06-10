@@ -1,6 +1,7 @@
 from datetime import timedelta
 
-from django.db.models import F, Max
+from django.db.models import F, Max, Count
+from django.db.models.functions import TruncYear, TruncMonth, ExtractYear, ExtractMonth
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
 from django.utils.datetime_safe import datetime
@@ -211,5 +212,16 @@ def statistics(request):
     stats['added_previous_week'] = Book.objects.filter(availability_date__gte=previous_week, availability_date__lt=last_week).count()
     stats['added_last_month'] = Book.objects.filter(availability_date__gte=last_month).count()
     stats['added_previous_month'] = Book.objects.filter(availability_date__gte=previous_month, availability_date__lt=last_month).count()
+
+    return Response(stats)
+
+@api_view(['GET'])
+def completion(request):
+    stats = Book.objects\
+        .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date'))\
+        .values('year','month')\
+        .annotate(books=Count('id'),read=Count('last_read_history__id'))\
+        .order_by('year', 'month')\
+        .all()
 
     return Response(stats)
