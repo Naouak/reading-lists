@@ -1,6 +1,21 @@
 <template>
   <div class="section">
     <h1 class="title">Library completion stats</h1>
+
+    <div style="" class="box">
+      <bar-chart :data="barChartYearly" :options="{
+        maintainAspectRatio: false,
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'year'
+                }
+            }]
+        }
+    }" />
+    </div>
+
     <div class="columns is-multiline">
       <div class="box column is-2" v-for="(data, year) in stats" :key="year">
         <h1 class="title">{{year}}</h1>
@@ -19,12 +34,15 @@
 
 <script>
 
+import BarChart from "~/components/BarChart";
 export default {
   name: "completion",
+  components: {BarChart},
   computed: {},
   data() {
     return {
       stats: null,
+      barChart: null,
       months: ["", "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"]
     };
@@ -52,9 +70,60 @@ export default {
         return acc;
       }, {});
 
+      const barChartMonthly = result.reduce((acc, o) => {
+        acc.datasets[0].data.push({t: new Date(o.year, o.month),y:o.books});
+        acc.datasets[1].data.push({t: new Date(o.year, o.month), y:o.read});
+        return acc;
+      }, {
+        datasets: [
+          {
+            label: "Books",
+            data: [],
+            borderColor: "#3e95cd",
+            backgroundColor: "#3e95cd"
+          },
+          {
+            label: "Read",
+            data: [],
+            borderColor: "#42a131",
+            backgroundColor: "#42a131"
+          }
+        ],
+      });
+
+      const yearlyData = result.reduce((acc, o) => {
+        acc[o.year] = acc[o.year] || {books:0, read: 0};
+        acc[o.year].books += o.books;
+        acc[o.year].read += o.read;
+        return acc;
+      }, {});
+
+      const barChartYearly = Object.keys(yearlyData).reduce((acc, y) => {
+        const d = yearlyData[y];
+        acc.datasets[0].data.push({t: new Date(y, 1),y:d.books});
+        acc.datasets[1].data.push({t: new Date(y, 1), y:d.read});
+        return acc;
+      }, {
+        datasets: [
+          {
+            label: "Books",
+            data: [],
+            borderColor: "#3e95cd",
+            backgroundColor: "#3e95cd"
+          },
+          {
+            label: "Read",
+            data: [],
+            borderColor: "#42a131",
+            backgroundColor: "#42a131"
+          }
+        ],
+      })
 
       return {
         stats,
+        barChartMonthly,
+        barChartYearly,
       };
     });
   }
