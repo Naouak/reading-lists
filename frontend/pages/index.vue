@@ -13,32 +13,21 @@
 
 <script>
 import Book from "~/components/Book";
+
 export default {
   name: 'HomePage',
   components: {Book},
-  data(){
+  data() {
     return {
       recentBooks: [],
       newBooks: [],
     };
   },
-  methods: {
-    updateComponent(route = this.$route){
-      this.$axios.$get('/book/?limit=50&ordering=-availability_date').then(
-        response => {
-          this.recentBooks = response.results
-        }
-      );
-      this.$axios.$get('/book/?limit=50&ordering=-pub_date,title').then(
-        response => {
-          this.newBooks = response.results
-        }
-      );
-    }
-  },
+  asyncData({$axios}) {
+    const recentPromise = $axios.$get('/book/?limit=50&ordering=-availability_date').then(r => r.results);
+    const newPromise = $axios.$get('/book/?limit=50&ordering=-pub_date,title').then(r => r.results);
 
-  beforeMount() {
-    this.updateComponent();
+    return Promise.all([recentPromise, newPromise]).then(([recentBooks, newBooks]) => ({recentBooks, newBooks}));
   }
 };
 </script>
