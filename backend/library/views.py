@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from django.db.models import F, Max, Count
+from django.db.models import F, Max, Count, Min
 from django.db.models.functions import TruncYear, TruncMonth, ExtractYear, ExtractMonth
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
@@ -33,6 +33,8 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
 
         if search is not None:
             queryset = queryset.filter(title__contains=search)
+
+        queryset = queryset.annotate(pub_date=Min("book__pub_date")).order_by('pub_date')
 
         return queryset
 
