@@ -71,23 +71,23 @@ export default {
       }, {});
 
       const barChartMonthly = result.reduce((acc, o) => {
-        acc.datasets[0].data.push({t: new Date(o.year, o.month),y:o.books});
-        acc.datasets[1].data.push({t: new Date(o.year, o.month), y:o.read});
+        acc.datasets[0].data.push({t: new Date(o.year, o.month), y:o.read});
+        acc.datasets[1].data.push({t: new Date(o.year, o.month),y:o.books});
         return acc;
       }, {
         datasets: [
+          {
+            label: "Read",
+            data: [],
+            borderColor: "#42a131",
+            backgroundColor: "#1c4917"
+          },
           {
             label: "Books",
             data: [],
             borderColor: "#3e95cd",
             backgroundColor: "#3e95cd"
           },
-          {
-            label: "Read",
-            data: [],
-            borderColor: "#42a131",
-            backgroundColor: "#42a131"
-          }
         ],
       });
 
@@ -100,23 +100,23 @@ export default {
 
       const barChartYearly = Object.keys(yearlyData).reduce((acc, y) => {
         const d = yearlyData[y];
-        acc.datasets[0].data.push({t: new Date(y, 1),y:d.books});
-        acc.datasets[1].data.push({t: new Date(y, 1), y:d.read});
+        acc.datasets[0].data.push({t: new Date(y, 1), y:d.read});
+        acc.datasets[1].data.push({t: new Date(y, 1),y:d.books});
         return acc;
       }, {
         datasets: [
           {
-            label: "Books",
-            data: [],
-            borderColor: "#3e95cd",
-            backgroundColor: "#3e95cd"
-          },
-          {
             label: "Read",
             data: [],
             borderColor: "#42a131",
-            backgroundColor: "#42a131"
-          }
+            backgroundColor: "rgba(78,189,58,0.5)"
+          },
+          {
+            label: "Books",
+            data: [],
+            borderColor: "#3e95cd",
+            backgroundColor: "rgba(71,169,232,0.5)"
+          },
         ],
       })
 
