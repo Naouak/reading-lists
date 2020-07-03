@@ -13,7 +13,18 @@
       </div>
     </div>
 
-    <h1 class="title is-clearfix">Reading list: {{readingList.title}}</h1>
+    <h1 class="title is-clearfix" v-if="!editMode">Reading list: {{readingList.title}}</h1>
+    <div v-else class="field has-addons is-clearfix" style="margin-bottom: 40px;">
+      <div class="control is-expanded">
+        <input type="text" v-model="readingList.title" class="input" />
+      </div>
+      <div class="control">
+        <a @click="updateList" class="button is-primary" style="margin-right: 10px;">
+          Save
+        </a>
+      </div>
+    </div>
+
 
     <div style="margin-bottom: 24px;" v-if="nextEntry && !editMode">
       <h2 class="title">Next Title to read</h2>
@@ -173,6 +184,11 @@ export default {
       this.$axios.$delete('/reading-list/' + this.readingListId + '/series/' + series.id + '/')
         .then(() => this.updateComponent());
     },
+    updateList(){
+      this.$axios.$patch('/reading-list/'+this.readingListId+'/', {
+        'title': this.readingList.title,
+      }).then(() => this.updateComponent());
+    }
   },
   beforeMount() {
     this.updateComponent(this.$route);
