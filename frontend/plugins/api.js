@@ -20,7 +20,7 @@ export default function (context, inject) {
     const code = parseInt(error.response && error.response.status)
     if (code === 401) {
       context.$auth.logout();
-      context.redirect('login');
+      context.redirect('/login');
     }
   })
 }
