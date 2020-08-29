@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.db.models import F, Max, Count, Min
-from django.db.models.functions import TruncYear, TruncMonth, ExtractYear, ExtractMonth
+from django.db.models.functions import TruncYear, TruncMonth, ExtractYear, ExtractMonth, Extract
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
 from django.utils.datetime_safe import datetime
@@ -219,11 +219,55 @@ def statistics(request):
 
 @api_view(['GET'])
 def completion(request):
-    stats = Book.objects\
+
+    start = request.query_params.get('from', None)
+    end = request.query_params.get('to', None)
+
+    book_count = Book.objects\
         .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date'))\
         .values('year','month')\
-        .annotate(books=Count('id'),read=Count('last_read_history__id'))\
+        .annotate(books=Count('id')) \
+        .order_by('year', 'month') \
+        .all()
+
+    query_set = Book.objects
+    if start:
+        try:
+            query_set = query_set.filter(last_read_history__read_date__gt=parse_datetime(start))
+        except:
+            pass
+    if end:
+        try:
+            query_set = query_set.filter(last_read_history__read_date__lte=parse_datetime(end))
+        except:
+            pass
+
+    book_read = query_set \
+        .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date')) \
+        .values('year', 'month') \
+        .annotate(read=Count('last_read_history__id'))\
         .order_by('year', 'month')\
         .all()
 
-    return Response(stats)
+    book_read_map = {}
+    for book_stat in book_read:
+        book_read_map[str(book_stat['year']) + "-" + str(book_stat['month'])] = book_stat['read']
+
+    for book_count_stats in book_count:
+        key = str(book_count_stats['year']) + "-" + str(book_count_stats['month'])
+        book_count_stats['read'] = book_read_map[key] if key in book_read_map else 0
+
+    return Response(book_count)
+
+
+@api_view(['GET'])
+def read_history(request):
+    read = BookReadingHistory.objects\
+        .filter(read_date__gte=parse_datetime('2020-05-16T00:00:00Z'))\
+        .values('read_date__date').annotate(read=Count('id'))
+
+    for read_entry in read:
+        read_entry['date'] = read_entry['read_date__date']
+        del read_entry['read_date__date']
+
+    return Response(read)

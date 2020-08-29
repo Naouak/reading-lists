@@ -18,5 +18,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include(reading_list_router.urls)),
     path('reading-statistics/', views.statistics),
-    path('completion-statistics/', views.completion)
+    path('completion-statistics/', views.completion),
+    path('reading-history-summary/', views.read_history)
 ]

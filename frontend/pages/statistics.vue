@@ -45,7 +45,14 @@
 <script>
 
 export default {
-  name: "statistics",
+  name: "Statistics",
+  asyncData({$axios}) {
+    return $axios.$get('/reading-statistics/').then(result => {
+      return {
+        'stats': result,
+      };
+    });
+  },
   computed: {
     read_last_week_progress() {
       let progress = (this.stats.read_last_week / (this.stats.read_previous_week || this.stats.read_last_week || 1) * 100 - 100) | 0;
@@ -79,13 +86,7 @@ export default {
       return ((this.stats.read_books / this.stats.total_books * 10000) | 0) / 100;
     },
   },
-  asyncData({$axios}) {
-    return $axios.$get('/reading-statistics/').then(result => {
-      return {
-        'stats': result,
-      };
-    });
-  }
+
 }
 </script>
 

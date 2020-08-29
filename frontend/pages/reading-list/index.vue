@@ -24,7 +24,7 @@
     </div>
 
     <div class="columns is-multiline">
-      <div class="column is-6" v-for="list in readingLists" :key="list.id">
+      <div v-for="list in readingLists" :key="list.id" class="column is-6">
         <ReadingList :list="list" @read="markAsRead" />
       </div>
     </div>
@@ -48,6 +48,9 @@ export default {
     $route(to) {
       this.updateComponent(to)
     },
+  },
+  beforeMount() {
+    this.updateComponent(this.$route);
   },
   methods: {
     updateComponent(route = this.$route) {
@@ -89,9 +92,6 @@ export default {
       this.$api.bookRead(book).then(() => this.updateComponent());
     }
   },
-  beforeMount() {
-    this.updateComponent(this.$route);
-  }
 
 }
 </script>

@@ -33,7 +33,7 @@
         <div class="media">
           <div class="media-left">
             <figure style="width: 70px;">
-              <img style="width: auto; height: auto;" :src="book.cover_url" :alt="book.title">
+              <img style="width: auto; height: auto;" :src="book.cover_url" :alt="book.title" loading="lazy" />
             </figure>
           </div>
           <div class="media-content">

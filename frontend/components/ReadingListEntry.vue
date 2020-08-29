@@ -3,7 +3,7 @@
     <div class="media">
       <div v-if="!condensed" class="media-left">
         <figure style="width: 128px;">
-          <img style="width: auto; height: auto;" :src="entry.book.cover_url" :alt="entry.book.title">
+          <img style="width: auto; height: auto;" :src="entry.book.cover_url" :alt="entry.book.title" loading="lazy">
         </figure>
       </div>
       <div class="media-content" :class="{'columns': condensed}">

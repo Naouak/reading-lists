@@ -85,6 +85,9 @@ export default {
       });
     },
   },
+  beforeMount() {
+    this.updateComponent(this.$route);
+  },
   methods: {
     updateComponent(route) {
       this.page = parseInt(route.query.page || 1);
@@ -111,8 +114,6 @@ export default {
     }
   },
 
-  beforeMount() {
-    this.updateComponent(this.$route);
-  },
+
 };
 </script>

@@ -5,13 +5,13 @@
     <div class="field">
       <label for="reading-list-title" class="label">Title</label>
       <div class="control">
-          <input class="input" id="reading-list-title" type="text" v-model="title" placeholder="Reading List Title" required />
+          <input id="reading-list-title" v-model="title" class="input" type="text" placeholder="Reading List Title" required />
       </div>
     </div>
 
     <div class="field">
       <div class="control">
-        <button class="button is-link" @click="createList" :disabled="inProgress || title.trim().length === 0">CREATE</button>
+        <button class="button is-link" :disabled="inProgress || title.trim().length === 0" @click="createList">CREATE</button>
       </div>
     </div>
 
@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: "new",
+  name: "New",
   data() {
     return {
       inProgress: false,
