@@ -1,4 +1,8 @@
+import time
+
 from django.core.management import BaseCommand
+from marvelous.exceptions import ApiError
+
 from library.models import BookSeries, Book
 
 from library.utils.marvel_api import get_client
@@ -75,20 +79,30 @@ class Command(BaseCommand):
     def doComics(self):
         offset = 0
         limit = 100
-        while True:
+        done = False
+        while not done:
             print("Checking page %d " % offset)
-            comics = self.api_client.comics({
-                'orderBy': '-modified',
-                'limit': limit,
-                'offset': offset,
-            })
+            retry = 3
+            while retry > 0:
+                try:
+                    comics = self.api_client.comics({
+                        'orderBy': '-modified',
+                        'limit': limit,
+                        'offset': offset,
+                    })
+                    retry = 0
+                    self.import_comics(comics)
 
-            self.import_comics(comics)
-
-            if len(comics) < limit:
-                break
+                    if len(comics) < limit:
+                        done = True
+                except ApiError as error:
+                    print("Error with API:")
+                    print(error)
+                    time.sleep(1)
+                    retry = retry - 1
 
             offset += 100
+            time.sleep(1)
         pass
 
     def doSeries(self):
