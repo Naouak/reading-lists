@@ -1,4 +1,5 @@
 import time
+import datetime
 
 from django.core.management import BaseCommand
 from marvelous.exceptions import ApiError
@@ -62,7 +63,7 @@ class Command(BaseCommand):
             # read_online_url
             object.read_online_url = "https://read.marvel.com/#/book/%s" % book.digital_id
             # pub_date
-            object.pub_date = book.dates.on_sale
+            object.pub_date = book.dates.on_sale or datetime.datetime(1900, 1, 1, 12, 0, 0, 0)
             object.availability_date = book.dates.unlimited
             # series
             if book.series:
