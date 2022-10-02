@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="section">
+    <div class="reading-lists-header section">
       <h1 class="title">Reading lists</h1>
       <nav class="navbar">
         <div class="navbar-menu">
@@ -23,13 +23,23 @@
       </nav>
     </div>
 
-    <div class="columns is-multiline">
-      <div v-for="list in readingLists" :key="list.id" class="column is-6">
+    <div class="reading-lists columns is-multiline">
+      <div v-for="list in readingLists" :key="list.id" class="column">
         <ReadingList :list="list" @read="markAsRead" />
       </div>
     </div>
   </div>
 </template>
+
+<style>
+.reading-lists-header{
+  padding: 1.5rem 1.5rem 0;
+}
+
+.reading-lists{
+  margin: 0;
+}
+</style>
 
 <script>
 import ReadingList from "~/components/ReadingList";

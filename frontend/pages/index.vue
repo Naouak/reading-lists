@@ -1,15 +1,35 @@
 <template>
-  <section class="section columns">
-    <div class="column">
+  <section class="home-page section">
+    <div class="">
       <h2 class="title">New titles</h2>
-      <Book v-for="book in newBooks" :key="book.id" :book="book" />
+      <div class="book-list">
+        <Book v-for="book in newBooks" :key="book.id" :book="book" />
+      </div>
     </div>
-    <div class="column">
+    <div class="">
       <h2 class="title">Recent additions</h2>
-      <Book v-for="book in recentBooks" :key="book.id" :book="book" />
+      <div class="book-list">
+        <Book v-for="book in recentBooks" :key="book.id" :book="book" />
+      </div>
     </div>
   </section>
 </template>
+
+<style>
+.home-page .column{
+  width: 100%;
+}
+
+.book-list{
+  max-width: 100%;
+  display: flex;
+  overflow-x: auto;
+}
+.book-list > *{
+  margin: 6px;
+  min-width: 250px;
+}
+</style>
 
 <script>
 import Book from "~/components/Book";
