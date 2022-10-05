@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       readSummary: null,
-      recentHistoryDays: 100,
+      recentHistoryDays: 180,
       entries: [],
     };
   },
