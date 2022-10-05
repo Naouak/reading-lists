@@ -3,7 +3,23 @@
     <h1 class="title">History</h1>
 
     <div class="box">
+      <h2>All time</h2>
       <bar-chart :data="readSummary" :options="{
+        maintainAspectRatio: false,
+        scales: {
+            xAxes: [{
+                type: 'time',
+                time: {
+                    unit: 'day'
+                }
+            }]
+        }
+    }" />
+    </div>
+
+    <div class="box">
+      <h2>In the last <input type="number" v-model="recentHistoryDays"> days</h2>
+      <bar-chart :data="recentReadSummary" :options="{
         maintainAspectRatio: false,
         scales: {
             xAxes: [{
@@ -18,7 +34,8 @@
 
     <div class="section" v-for="h in history" :key="h.date">
       <h2 class="title">
-        <RelativeDateDisplay :date="h.date" /> ({{h.entries.length}} entries)
+        <RelativeDateDisplay :date="h.date" />
+        ({{ h.entries.length }} entries)
       </h2>
       <ReadingHistoryEntry v-for="entry in h.entries" :key="entry.id" :entry="entry" @remove="remove" />
     </div>
@@ -30,23 +47,25 @@
 import ReadingHistoryEntry from "~/components/ReadingHistoryEntry";
 import RelativeDateDisplay from "~/components/RelativeDateDisplay";
 import BarChart from "~/components/BarChart";
+
 export default {
   name: "history",
   components: {RelativeDateDisplay, ReadingHistoryEntry, BarChart},
   data() {
     return {
       readSummary: null,
+      recentHistoryDays: 100,
       entries: [],
     };
   },
 
   computed: {
-    history(){
+    history() {
       return this.entries.reduce((acc, entry) => {
         const date = new Date(entry.read_date);
-        const isodate = [date.getFullYear(),("0"+(date.getUTCMonth()+1)).substr(-2),("0"+date.getDate()).substr(-2)].join('-');
-        let current = acc[acc.length-1];
-        if(!current || current?.date !== isodate){
+        const isodate = [date.getFullYear(), ("0" + (date.getUTCMonth() + 1)).substr(-2), ("0" + date.getDate()).substr(-2)].join('-');
+        let current = acc[acc.length - 1];
+        if (!current || current?.date !== isodate) {
           current = {date: isodate, entries: []};
           acc.push(current);
         }
@@ -54,6 +73,23 @@ export default {
         return acc;
       }, []);
     },
+    recentReadSummary() {
+      const recentCutOff = new Date();
+      recentCutOff.setDate(recentCutOff.getDate() - this.recentHistoryDays); // 100 days ago
+
+      return {
+        datasets: [
+          {
+            label: "Read",
+            data: this.readSummary?.datasets[0]?.data?.filter(data => {
+              return data.t.getTime() > recentCutOff.getTime();
+            }) || [],
+            borderColor: "#42a131",
+            backgroundColor: "rgba(78,189,58,0.5)"
+          },
+        ],
+      };
+    }
   },
 
   methods: {
@@ -71,8 +107,7 @@ export default {
               backgroundColor: "rgba(78,189,58,0.5)"
             },
           ],
-        })
-
+        });
       });
     },
     updateComponent(route = this.$route) {
@@ -82,8 +117,8 @@ export default {
         }
       );
     },
-    remove(entry){
-      this.$axios.$delete('/reading-history/'+entry.id+'/').then(() => this.updateComponent());
+    remove(entry) {
+      this.$axios.$delete('/reading-history/' + entry.id + '/').then(() => this.updateComponent());
     }
   },
 
