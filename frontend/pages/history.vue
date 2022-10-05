@@ -98,6 +98,17 @@ export default {
             borderColor: "#478da6",
             fill: false
           },
+            {
+              label: "30 Days average",
+              type: 'line',
+              data:  this.readSummary?.datasets[2]?.data?.filter(data => {
+              return data.t.getTime() > recentCutOff.getTime();
+            }) || [],
+              borderWidth: 0,
+              pointRadius: 1,
+              borderColor: "#0b2796",
+              fill: false
+            },
         ],
       };
     }
@@ -107,6 +118,7 @@ export default {
     fetchReadSummary() {
       this.$axios.$get('/reading-history-summary/').then(result => {
         let sevenDaysAverage = [];
+        let thirtyDaysAverage = [];
         this.readSummary = result.reduce((acc, data) => {
           const date = new Date(data.date);
 
@@ -114,16 +126,29 @@ export default {
           lastWeek.setTime(date.getTime());
           lastWeek.setDate(date.getDate() - 7);
 
+          const lastMonth = new Date();
+          lastMonth.setTime(date.getTime());
+          lastMonth.setDate(date.getDate() - 30);
+
           sevenDaysAverage = sevenDaysAverage.filter(d => {
             return d.t.getTime() >= lastWeek.getTime();
           });
 
+          thirtyDaysAverage = thirtyDaysAverage.filter(d => {
+            return d.t.getTime() >= lastMonth.getTime();
+          });
+
           const dataPoint = {t: date, y: data.read};
           sevenDaysAverage.push(dataPoint);
+          thirtyDaysAverage.push(dataPoint);
           acc.datasets[0].data.push(dataPoint);
           acc.datasets[1].data.push({
             t: date,
             y: sevenDaysAverage.reduce((acc, data) => acc + data.y, 0) / 7
+          });
+          acc.datasets[2].data.push({
+            t: date,
+            y: thirtyDaysAverage.reduce((acc, data) => acc + data.y, 0) / 30
           });
           return acc;
         }, {
@@ -141,6 +166,15 @@ export default {
               borderWidth: 0,
               pointRadius: 1,
               borderColor: "#478da6",
+              fill: false
+            },
+            {
+              label: "30 Days average",
+              type: 'line',
+              data: [],
+              borderWidth: 0,
+              pointRadius: 1,
+              borderColor: "#0b2796",
               fill: false
             },
           ],
