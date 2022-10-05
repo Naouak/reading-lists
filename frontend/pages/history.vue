@@ -87,6 +87,17 @@ export default {
             borderColor: "#42a131",
             backgroundColor: "rgba(78,189,58,0.5)"
           },
+          {
+            label: "7 Days average",
+            type: 'line',
+            data: this.readSummary?.datasets[1]?.data?.filter(data => {
+              return data.t.getTime() > recentCutOff.getTime();
+            }) || [],
+            borderWidth: 0,
+            pointRadius: 1,
+            borderColor: "#478da6",
+            fill: false
+          },
         ],
       };
     }
@@ -95,8 +106,25 @@ export default {
   methods: {
     fetchReadSummary() {
       this.$axios.$get('/reading-history-summary/').then(result => {
+        let sevenDaysAverage = [];
         this.readSummary = result.reduce((acc, data) => {
-          acc.datasets[0].data.push({t: new Date(data.date), y: data.read});
+          const date = new Date(data.date);
+
+          const lastWeek = new Date();
+          lastWeek.setTime(date.getTime());
+          lastWeek.setDate(date.getDate() - 7);
+
+          sevenDaysAverage = sevenDaysAverage.filter(d => {
+            return d.t.getTime() >= lastWeek.getTime();
+          });
+
+          const dataPoint = {t: date, y: data.read};
+          sevenDaysAverage.push(dataPoint);
+          acc.datasets[0].data.push(dataPoint);
+          acc.datasets[1].data.push({
+            t: date,
+            y: sevenDaysAverage.reduce((acc, data) => acc + data.y, 0) / 7
+          });
           return acc;
         }, {
           datasets: [
@@ -105,6 +133,15 @@ export default {
               data: [],
               borderColor: "#42a131",
               backgroundColor: "rgba(78,189,58,0.5)"
+            },
+            {
+              label: "7 Days average",
+              type: 'line',
+              data: [],
+              borderWidth: 0,
+              pointRadius: 1,
+              borderColor: "#478da6",
+              fill: false
             },
           ],
         });
