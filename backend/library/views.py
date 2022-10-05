@@ -264,7 +264,9 @@ def completion(request):
 def read_history(request):
     read = BookReadingHistory.objects\
         .filter(read_date__gte=parse_datetime('2020-05-16T00:00:00Z'))\
-        .values('read_date__date').annotate(read=Count('id'))
+        .values('read_date__date')\
+        .order_by('read_date__date')\
+        .annotate(read=Count('id'))
 
     for read_entry in read:
         read_entry['date'] = read_entry['read_date__date']
