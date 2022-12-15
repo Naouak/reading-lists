@@ -5,6 +5,7 @@ from django.db.models.functions import TruncYear, TruncMonth, ExtractYear, Extra
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
 from django.utils.datetime_safe import datetime
+from django.utils import timezone
 
 from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action, permission_classes, api_view
@@ -32,7 +33,9 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)
 
         if search is not None:
-            queryset = queryset.filter(title__contains=search)
+            search_terms = search.split(" ")
+            for term in search_terms:
+                queryset = queryset.filter(title__icontains=term)
 
         queryset = queryset.annotate(pub_date=Min("book__pub_date")).order_by('pub_date')
 
@@ -61,7 +64,9 @@ class BookViewSet(viewsets.ModelViewSet):
         if series is not None:
             queryset = queryset.filter(series_id=series)
         if search is not None:
-            queryset = queryset.filter(title__contains=search)
+            search_terms = search.split(" ")
+            for term in search_terms:
+                queryset = queryset.filter(title__icontains=term)
 
         return queryset
 
@@ -200,7 +205,8 @@ def statistics(request):
     stats['total_books'] = Book.objects.count()
     stats['read_books'] = BookReadingHistory.objects.count()
 
-    current_date = datetime.today()
+    current_date = timezone.make_aware(datetime.today())
+
     last_week = current_date - timedelta(days=7)
     previous_week = last_week - timedelta(days=7)
     last_month = current_date - timedelta(days=30)
