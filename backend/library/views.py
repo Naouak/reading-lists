@@ -52,6 +52,7 @@ class BookViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         series = self.request.query_params.get('series', None)
         search = self.request.query_params.get('search', None)
+        exclude_term = self.request.query_params.get('exclude_term', None)
 
         external_source = self.request.query_params.get('external_source', None)
         external_id = self.request.query_params.get('external_id', None)
@@ -67,6 +68,8 @@ class BookViewSet(viewsets.ModelViewSet):
             search_terms = search.split(" ")
             for term in search_terms:
                 queryset = queryset.filter(title__icontains=term)
+        if exclude_term is not None:
+            queryset = queryset.exclude(title__icontains=exclude_term)
 
         return queryset
 
