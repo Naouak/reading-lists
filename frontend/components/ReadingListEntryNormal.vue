@@ -34,11 +34,11 @@
 }
 
 .reading-list-entry.read .cover img{
-  opacity: 70%;
+  opacity: .7;
 }
 
 .reading-list-entry.read:hover .cover img{
-  opacity: 100%;
+  opacity: 1;
 }
 
 .cover {
