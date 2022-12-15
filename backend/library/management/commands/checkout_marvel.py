@@ -18,12 +18,15 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('type', choices=['series', 'comics'], type=str)
+        parser.add_argument('-p', '--max_pages', dest='max_pages', metavar='N', type=int,
+                            help='Stop after checking N pages')
 
     def handle(self, *args, **options):
         type = options['type']
+        max_pages = options['max_pages']
 
         if type == "comics":
-            self.doComics()
+            self.doComics(max_pages)
         elif type == "series":
             self.doSeries()
 
@@ -46,7 +49,6 @@ class Command(BaseCommand):
 
             if not book.dates.unlimited:
                 continue
-
 
             query_set = Book.objects.filter(external_id=book.id)
             if len(query_set) >= 1:
@@ -77,7 +79,7 @@ class Command(BaseCommand):
                     object.series = series
             object.save()
 
-    def doComics(self):
+    def doComics(self, max_pages = None):
         offset = 0
         limit = 100
         done = False
@@ -94,7 +96,7 @@ class Command(BaseCommand):
                     retry = 0
                     self.import_comics(comics)
 
-                    if len(comics) < limit:
+                    if len(comics) < limit or max_pages and max_pages >= offset/limit:
                         done = True
                 except ApiError as error:
                     print("Error with API:")
