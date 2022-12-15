@@ -25,13 +25,25 @@
       </div>
     </div>
 
-
     <div style="margin-bottom: 24px;" v-if="nextEntry && !editMode">
       <h2 class="title">Next Title to read</h2>
       <ReadingListEntry :entry="nextEntry" @read="markAsRead(nextEntry.book)" />
     </div>
 
-    <div class="columns">
+    <div class="reading-list" v-if="readingList.entries.length && !editMode">
+      <b-progress class="reading-list-progress" :value="progress" show-value type="is-info is-large" format="percent">
+        {{ readEntries }} / {{ readingList.entries.length }} read
+      </b-progress>
+    </div>
+
+    <div class="reading-lists columns is-multiline" v-if="!editMode">
+      <div v-for="entry in readingList.entries" :key="entry.id" class="column">
+
+        <ReadingListEntryNormal  :entry="entry" @read="markAsRead(entry.book)" />
+      </div>
+    </div>
+
+    <div class="columns"  v-if="editMode">
       <div class="column" :class="{'is-6':editMode}">
         <div v-if="readingList.series.length" class="card" style="margin-bottom: 24px;">
           <div class="card-header">
@@ -86,14 +98,16 @@
     </div>
   </section>
 </template>
+
 <script>
 import BookSelector from "~/components/BookSelector";
 import ReadingListEntry from "~/components/ReadingListEntry";
 import SeriesSelector from "~/components/SeriesSelector";
+import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
 
 export default {
   name: "readingListDetails",
-  components: {SeriesSelector, ReadingListEntry, BookSelector},
+  components: {SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal},
   data() {
     return {
       readingListId: null,
