@@ -131,7 +131,7 @@ USE_TZ = True
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': '../django_cache',
+        'LOCATION': os.path.join(BASE_DIR, '../django_cache'),
     }
 }
 
@@ -176,3 +176,5 @@ OAUTH2_PROVIDER = {
     # this is the list of available scopes
     'SCOPES': {'all': 'access everything'},
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
