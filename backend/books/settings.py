@@ -138,7 +138,7 @@ CACHES = {
 if os.getenv('CACHE_TYPE') == 'memcached':
     CACHES = {
         'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
             'LOCATION': os.getenv('CACHE_SERVER'),
         }
     }
