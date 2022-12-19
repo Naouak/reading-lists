@@ -24,6 +24,7 @@ class BookSeries(models.Model):
             return None
         return query_set[0].cover_url
 
+
 class Book(models.Model):
     title = models.CharField(max_length=512)
     cover_url = models.URLField('URL for cover art', null=True)
@@ -37,6 +38,7 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class BookReadingHistory(models.Model):
     book = models.OneToOneField(Book, related_name='last_read_history', on_delete=models.CASCADE)
@@ -68,6 +70,7 @@ class ReadingHistory(models.Model):
         super().delete(*args, **kwargs)
         self.update_history()
 
+
 class ReadingList(models.Model):
     title = models.CharField(max_length=512)
     archived = models.BooleanField(default=False)
@@ -76,6 +79,7 @@ class ReadingList(models.Model):
     def __str__(self):
         return self.title
 
+
 @receiver(post_save, sender=Book)
 def add_new_entry_to_reading_lists(sender, instance, created, **kwargs):
     """Adds new books to reading lists that follow a series"""
@@ -83,7 +87,7 @@ def add_new_entry_to_reading_lists(sender, instance, created, **kwargs):
         return
     reading_lists = ReadingList.objects.filter(series__id=instance.series_id)
     for reading_list in reading_lists:
-        position = reading_list.entries.aggregate(Max('position'))['position__max']+1 or 1
+        position = reading_list.entries.aggregate(Max('position'))['position__max'] + 1 or 1
         ReadingListEntry(book=instance, reading_list=reading_list, position=position).save()
 
 
@@ -97,3 +101,18 @@ class ReadingListEntry(models.Model):
 
     def __str__(self):
         return self.book.title
+
+
+class BookLink(models.Model):
+    """
+    Book relations (callbacks to previous issues in comics)
+    Source is the book the other book is mentioned
+    target can be null in case the book is not in the database.
+    """
+    source = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='source')
+    target = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, related_name='target')
+    link_text = models.TextField(default="", blank=True)
+    created = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.source.title + " - " + self.link_text

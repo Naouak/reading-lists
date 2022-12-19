@@ -1,0 +1,87 @@
+<template>
+  <section class="section">
+    <h1 class="title">Book Links</h1>
+
+    <div>
+      <nuxt-link class="button is-link" :to="{name:'book-links-new'}">
+        <b-icon icon="plus" />
+        <span>Create a list</span>
+      </nuxt-link>
+    </div>
+
+    <div class="links">
+      <div class="link" v-for="link in bookLinks" :key="link.id">
+        <div class="source">
+          <Book :book="link.source" />
+        </div>
+        <div class="link-text">
+          {{ link.link_text || " Refers to " }}
+        </div>
+        <div class="target">
+          <Book v-if="link.target" :book="link.target" />
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<style>
+.links {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.link {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  border: solid grey 1px;
+  padding: 10px;
+  width: 600px;
+}
+
+.link .link-text {
+  text-align: center;
+  min-width: 80px;
+}
+
+.link .source, .link .target {
+  flex: 1;
+  max-width: 200px;
+}
+</style>
+
+<script>
+
+import Book from "~/components/Book.vue";
+
+export default {
+  name: "BookLinks",
+  components: {Book},
+  data() {
+    return {
+      bookLinks: [],
+    }
+  },
+  computed: {},
+  watch: {
+    $route(to) {
+      this.updateComponent(to)
+    },
+  },
+  beforeMount() {
+    this.updateComponent(this.$route);
+  },
+  methods: {
+    updateComponent(route = this.$route) {
+      this.readingLists = [];
+      this.$axios.$get(this.getApiUrl(route)).then(response => {
+        this.bookLinks = response.results;
+      });
+    },
+    getApiUrl(route = this.$route) {
+      return '/book-link/';
+    }
+  }
+};
+</script>

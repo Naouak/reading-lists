@@ -1,4 +1,4 @@
-from .models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory
+from .models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory, BookLink
 from rest_framework import serializers
 
 class BookSeriesSerializer(serializers.ModelSerializer):
@@ -36,3 +36,11 @@ class ReadingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReadingList
         fields = ['id', 'title', 'entries', 'series', 'archived']
+
+class BookLinkSerializer(serializers.ModelSerializer):
+    source = BookSerializer()
+    target = BookSerializer(allow_null=True)
+    class Meta:
+        model = BookLink
+        fields = '__all__'
+        depth = 1

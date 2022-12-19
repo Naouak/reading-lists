@@ -9,6 +9,7 @@ router.register(r'book',views.BookViewSet)
 router.register(r'series', views.BookSeriesViewSet)
 router.register(r'reading-list', views.ReadingListViewSet)
 router.register(r'reading-history', views.ReadingHistoryViewSet)
+router.register(r'book-link', views.BookLinkViewSet)
 
 reading_list_router = routers.NestedSimpleRouter(router, r'reading-list', lookup='reading_list')
 reading_list_router.register(r'entries', views.ReadingListEntryViewSet, basename='reading-list-entries')

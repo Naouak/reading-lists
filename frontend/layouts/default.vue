@@ -80,6 +80,10 @@ export default {
           icon: 'chart-line',
           to: {name: 'completion'}
         },
+        {
+          title: 'Issue Relations',
+          to: {name: 'book-links'}
+        }
       ],
     };
   },

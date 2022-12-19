@@ -14,9 +14,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from library.models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory
+from library.models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory, BookLink
 from library.serializers import BookSeriesSerializer, BookSerializer, ReadingListSerializer, ReadingListEntrySerializer, \
-    ReadingHistorySerializer
+    ReadingHistorySerializer, BookLinkSerializer
 
 
 def index(request):
@@ -109,6 +109,22 @@ class ReadingHistoryViewSet(viewsets.ModelViewSet):
     queryset = ReadingHistory.objects.all().order_by('-read_date')
     serializer_class = ReadingHistorySerializer
     permission_classes = [IsAuthenticated]
+
+class BookLinkViewSet(viewsets.ModelViewSet):
+    queryset = BookLink.objects.all().order_by('-created')
+    serializer_class = BookLinkSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, **kwargs):
+        source_id = request.data['source']
+        target_id = request.data.get('target', None)
+        link_text = request.data['link_text']
+
+        link = BookLink(source_id=source_id, target_id=target_id, link_text=link_text)
+        link.save()
+
+        serializer = BookLinkSerializer(link)
+        return Response(serializer.data)
 
 @permission_classes((IsAuthenticated,))
 class ReadingListEntryViewSet(viewsets.ViewSet):
