@@ -25,32 +25,6 @@
   </section>
 </template>
 
-<style>
-.links {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.link {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  border: solid grey 1px;
-  padding: 10px;
-  width: 600px;
-}
-
-.link .link-text {
-  text-align: center;
-  min-width: 80px;
-}
-
-.link .source, .link .target {
-  flex: 1;
-  max-width: 200px;
-}
-</style>
-
 <script>
 
 import Book from "~/components/Book.vue";

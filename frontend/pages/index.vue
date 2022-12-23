@@ -21,26 +21,6 @@
   </section>
 </template>
 
-<style>
-.home-page .column{
-  width: 100%;
-}
-
-.book-list{
-  max-width: 100%;
-  display: flex;
-  overflow-x: auto;
-}
-.book-list > *{
-  margin: 6px;
-  min-width: 250px;
-}
-
-.recent-books-list{
-  margin-bottom: 50px;
-}
-</style>
-
 <script>
 import Book from "~/components/Book";
 

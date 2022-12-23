@@ -26,46 +26,6 @@
   </div>
 </template>
 
-<style>
-.reading-list{
-  box-shadow: 0 2px 3px rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 10%);
-  border-radius: 5px;
-  min-width: 250px;
-  overflow: clip;
-}
-
-.reading-list-title{
-  padding: 5px;
-  text-align: center;
-  font-weight: bolder;
-}
-
-.reading-list-title a{
-  color: #363636;
-}
-
-.reading-list .reading-list-progress{
-  margin-bottom: 0;
-}
-
-.reading-list .reading-list-progress progress::-webkit-progress-bar{
-  background-color: #f0e0e0;
-}
-
-.reading-list .reading-list-progress progress::-webkit-progress-value{
-  background-color: red;
-}
-
-.reading-list .reading-list-progress .progress-value{
-  color: #363636;
-}
-
-.reading-list .reading-list-progress .progress{
-    border-radius: 0;
-
-  }
-</style>
-
 <script>
 import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
 

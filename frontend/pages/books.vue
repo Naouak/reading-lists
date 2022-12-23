@@ -34,26 +34,6 @@
   </section>
 </template>
 
-<style>
-.books-books {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.books-book {
-  flex-basis: 0;
-  flex-grow: 1;
-  flex-shrink: 1;
-
-
-  box-shadow: 0 2px 3px rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 10%);
-  border-radius: 5px;
-  min-width: 250px;
-  margin: 5px;
-}
-</style>
-
 <script>
 import Book from '../components/Book';
 import Pagination from "~/components/Pagination";

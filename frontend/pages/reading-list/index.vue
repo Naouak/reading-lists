@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="">
     <div class="reading-lists-header section">
       <h1 class="title">Reading lists</h1>
       <nav class="navbar">
@@ -30,16 +30,6 @@
     </div>
   </div>
 </template>
-
-<style>
-.reading-lists-header{
-  padding: 1.5rem 1.5rem 0;
-}
-
-.reading-lists{
-  margin: 0;
-}
-</style>
 
 <script>
 import ReadingList from "~/components/ReadingList";

@@ -31,38 +31,6 @@
   </section>
 </template>
 
-<style>
-.three-columns {
-  display: flex;
-  justify-content: space-between;
-}
-
-.book-link-form .card{
-  padding: 10px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.source-book, .target-book {
-  width: 250px;
-  flex: 1;
-}
-
-.book-link-form h2{
-  text-align: center;
-}
-
-.book-link-form-link {
-  flex: 1;
-  text-align: center;
-}
-
-.book-link-create-button{
-  margin: 10px;
-}
-
-</style>
-
 <script>
 import BookSelector from "~/components/BookSelector.vue";
 import Book from "~/components/Book.vue";
