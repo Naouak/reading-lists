@@ -10,16 +10,18 @@
           My Library
         </a>
 
-        <div class="navbar-burger">
-          <span />
-          <span />
-          <span />
-        </div>
+        <button class="navbar-menu-button" @click="menuVisible=!menuVisible">
+          <b-icon icon="menu" />
+        </button>
       </div>
     </nav>
 
-    <section class="main-content columns">
-      <aside class="column is-2 section">
+    <section class="main-content">
+      <div class="">
+        <nuxt />
+      </div>
+
+      <aside class="nav-menu column section" v-if="menuVisible" @click="menuVisible=false">
         <p class="menu-label is-hidden-touch">
           Menu
         </p>
@@ -32,10 +34,6 @@
           </li>
         </ul>
       </aside>
-
-      <div class="column is-10">
-        <nuxt />
-      </div>
     </section>
   </div>
 </template>
@@ -44,6 +42,7 @@
 export default {
   data() {
     return {
+      menuVisible: false,
       items: [
         {
           title: 'Home',
