@@ -230,15 +230,22 @@ def statistics(request):
     previous_week = last_week - timedelta(days=7)
     last_month = current_date - timedelta(days=30)
     previous_month = last_month - timedelta(days=30)
+    last_year = current_date - timedelta(days=365)
+    previous_year = last_year - timedelta(days=365)
+
     stats['read_last_week'] = BookReadingHistory.objects.filter(read_date__gte=last_week).count()
     stats['read_previous_week'] = BookReadingHistory.objects.filter(read_date__gte=previous_week, read_date__lt=last_week).count()
     stats['read_last_month'] = BookReadingHistory.objects.filter(read_date__gte=last_month).count()
     stats['read_previous_month'] = BookReadingHistory.objects.filter(read_date__gte=previous_month, read_date__lt=last_month).count()
+    stats['read_last_year'] = BookReadingHistory.objects.filter(read_date__gte=last_year).count()
+    stats['read_previous_year'] = BookReadingHistory.objects.filter(read_date__gte=previous_year, read_date__lt=last_year).count()
 
     stats['added_last_week'] = Book.objects.filter(availability_date__gte=last_week).count()
     stats['added_previous_week'] = Book.objects.filter(availability_date__gte=previous_week, availability_date__lt=last_week).count()
     stats['added_last_month'] = Book.objects.filter(availability_date__gte=last_month).count()
     stats['added_previous_month'] = Book.objects.filter(availability_date__gte=previous_month, availability_date__lt=last_month).count()
+    stats['added_last_year'] = Book.objects.filter(availability_date__gte=last_year).count()
+    stats['added_previous_year'] = Book.objects.filter(availability_date__gte=previous_year, availability_date__lt=last_year).count()
 
     return Response(stats)
 

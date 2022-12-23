@@ -20,6 +20,10 @@
           <div class="subtitle">Read last month</div>
           <div class="title">{{stats.read_last_month}} ({{read_last_month_progress}})</div>
         </div>
+        <div class="column">
+          <div class="subtitle">Read last year</div>
+          <div class="title">{{stats.read_last_year}} ({{read_last_year_progress}})</div>
+        </div>
       </div>
     </div>
 
@@ -34,6 +38,10 @@
         <div class="column">
           <div class="subtitle">Added last month</div>
           <div class="title">{{stats.added_last_month}} ({{added_last_month_progress}})</div>
+        </div>
+        <div class="column">
+          <div class="subtitle">Added last year</div>
+          <div class="title">{{stats.added_last_year}} ({{added_last_year_progress}})</div>
         </div>
       </div>
     </div>
@@ -68,6 +76,13 @@ export default {
       }
       return progress + "%";
     },
+    read_last_year_progress() {
+      let progress = (this.stats.read_last_year / (this.stats.read_previous_year || this.stats.read_last_year || 1) * 100 - 100) | 0;
+      if (progress >= 0) {
+        progress = "+" + progress;
+      }
+      return progress + "%";
+    },
     added_last_week_progress() {
       let progress = (this.stats.added_last_week / (this.stats.added_previous_week || this.stats.added_last_week || 1) * 100 - 100) | 0;
       if (progress >= 0) {
@@ -77,6 +92,13 @@ export default {
     },
     added_last_month_progress() {
       let progress = (this.stats.added_last_month / (this.stats.added_previous_month || this.stats.added_last_month || 1) * 100 - 100) | 0;
+      if (progress >= 0) {
+        progress = "+" + progress;
+      }
+      return progress + "%";
+    },
+    added_last_year_progress() {
+      let progress = (this.stats.added_last_year / (this.stats.added_previous_year || this.stats.added_last_year || 1) * 100 - 100) | 0;
       if (progress >= 0) {
         progress = "+" + progress;
       }
