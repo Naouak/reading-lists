@@ -1,11 +1,47 @@
+@use 'page.scss';
+@use 'pages';
+@use 'components';
+
+.progress-bar {
+  position: relative;
+  margin-bottom: 0;
+  line-height: 1.5rem;
+  font-size: 1.1rem;
+
+  progress {
+    height: 1.5rem;
+    margin-bottom: 0!important; // Remove important with buefy
+  }
+
+  progress::-webkit-progress-bar {
+    background-color: #f0e0e0;
+  }
+
+  progress::-webkit-progress-value {
+    background-color: red;
+  }
+
+  .progress-value {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    margin: auto;
+    color: #363636;
+    font-size: 1.1rem;
+    line-height: 1.5rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .progress {
+    border-radius: 0;
+
+  }
+}
+
 .reading-lists {
   margin: 0;
 }
-
-.reading-lists-header {
-  padding: 1.5rem 1.5rem 0;
-}
-
 
 .reading-list {
   box-shadow: 0 2px 3px rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 10%);
@@ -13,48 +49,17 @@
   min-width: 250px;
   overflow: clip;
 
-  .reading-list-progress {
-    margin-bottom: 0;
+  .reading-list-title {
+    padding: 5px;
+    text-align: center;
+    font-weight: bolder;
 
-    progress::-webkit-progress-bar {
-      background-color: #f0e0e0;
-    }
-
-    progress::-webkit-progress-value {
-      background-color: red;
-    }
-
-    .progress-value {
+    a {
       color: #363636;
     }
-
-    .progress {
-      border-radius: 0;
-
-    }
-  }
-}
-
-.reading-list-title {
-  padding: 5px;
-  text-align: center;
-  font-weight: bolder;
-
-  a {
-    color: #363636;
-  }
-}
-
-.reading-list-entry {
-  min-width: 300px;
-  max-width: 400px;
-
-  &.read .cover img {
-    opacity: .7;
   }
 
-  &.read:hover .cover img {
-    opacity: 1;
+  .reading-list-progress {
   }
 }
 

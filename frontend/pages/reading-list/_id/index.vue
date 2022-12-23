@@ -31,9 +31,9 @@
     </div>
 
     <div class="reading-list" v-if="readingList.entries.length && !editMode">
-      <b-progress class="reading-list-progress" :value="progress" show-value type="is-info is-large" format="percent">
+      <Progress :value="progress">
         {{ readEntries }} / {{ readingList.entries.length }} read
-      </b-progress>
+      </Progress>
     </div>
 
     <div class="reading-lists columns is-multiline" v-if="!editMode">
@@ -66,9 +66,9 @@
             <div class="card-header-title">In the list ({{readingList.entries.length}} books)</div>
           </div>
           <div class="card-content" v-if="readingList.entries.length">
-            <b-progress :value="progress" show-value type="is-info is-large" format="percent">
+            <Progress :value="progress">
               {{readEntries}} / {{readingList.entries.length}} read
-            </b-progress>
+            </Progress>
           </div>
           <div class="card-content">
             <ReadingListEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
@@ -104,10 +104,11 @@ import BookSelector from "~/components/BookSelector";
 import ReadingListEntry from "~/components/ReadingListEntry";
 import SeriesSelector from "~/components/SeriesSelector";
 import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
+import Progress from "~/components/Progress.vue";
 
 export default {
   name: "readingListDetails",
-  components: {SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal},
+  components: {Progress, SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal},
   data() {
     return {
       readingListId: null,

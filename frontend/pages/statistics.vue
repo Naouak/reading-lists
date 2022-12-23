@@ -3,9 +3,7 @@
     <h1 class="title">Statistics</h1>
     <div class="box">
       <h2 class="subtitle">Total Progress</h2>
-      <b-progress :value="read_progress" show-value type="is-info is-large" format="percent">
-        {{stats.read_books}} / {{stats.total_books}} read ({{read_progress}}%)
-      </b-progress>
+      <Progress :value="read_progress">{{stats.read_books}} / {{stats.total_books}} read ({{read_progress}}%)</Progress>
     </div>
 
     <div class="box">
@@ -52,8 +50,11 @@
 
 <script>
 
+import Progress from "~/components/Progress.vue";
+
 export default {
   name: "Statistics",
+  components: {Progress},
   asyncData({$axios}) {
     return $axios.$get('/reading-statistics/').then(result => {
       return {

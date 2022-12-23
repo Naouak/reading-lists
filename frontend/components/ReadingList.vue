@@ -6,9 +6,9 @@
       <span v-if="list.archived">(Archived)</span>
     </h2>
 
-    <b-progress class="reading-list-progress" :value="read/total*100" show-value type="is-info is-large" format="percent">
+    <Progress class="progress-bar" :value="read/total*100">
       {{read}} / {{total}} read
-    </b-progress>
+    </Progress>
 
     <div v-if="read == total && total > 0">
       <h3 class="subtitle">Finished!</h3>
@@ -28,10 +28,11 @@
 
 <script>
 import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
+import Progress from "~/components/Progress.vue";
 
 export default {
   name: "ReadingList",
-  components: {ReadingListEntryNormal},
+  components: {ReadingListEntryNormal, Progress},
   props: {
     list: {
       required: true,

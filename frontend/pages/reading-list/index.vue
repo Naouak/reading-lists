@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <div class="reading-lists-header section">
+    <div class="page-header reading-lists-header section">
       <h1 class="title">Reading lists</h1>
       <nav class="navbar">
         <div class="navbar-menu">

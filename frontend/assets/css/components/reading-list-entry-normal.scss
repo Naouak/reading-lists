@@ -1,0 +1,12 @@
+.reading-list-entry {
+  min-width: 300px;
+  max-width: 400px;
+
+  &.read .cover img {
+    opacity: .7;
+  }
+
+  &.read:hover .cover img {
+    opacity: 1;
+  }
+}

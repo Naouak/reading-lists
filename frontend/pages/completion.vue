@@ -26,14 +26,14 @@
 
     <div class="columns is-multiline">
       <div class="box column is-2" v-for="(data, year) in stats" :key="year">
-        <h1 class="title">{{year}}</h1>
-        <b-progress :value="data.progress" show-value type="is-success is-info is-large" format="percent">
-          {{data.read}} / {{data.books}} read
-        </b-progress>
-        <div v-for="(stat, month) in data.months" :key="month">
-          <b-progress :value="stat.progress" show-value type="is-info is-large" format="percent">
-            {{months[month]}} - {{stat.read}} / {{stat.books}} read
-          </b-progress>
+        <h1 class="title">{{ year }}</h1>
+        <div class="year-completion">
+          <Progress :value="data.progress">{{ data.read }} / {{ data.books }} read</Progress>
+        </div>
+        <div class="month-completion">
+          <div v-for="(stat, month) in data.months" :key="month">
+            <Progress :value="stat.progress">{{ months[month] }} - {{ stat.read }} / {{ stat.books }} read</Progress>
+          </div>
         </div>
       </div>
     </div>
@@ -43,10 +43,11 @@
 <script>
 
 import LineChart from "~/components/LineChart";
+import Progress from "~/components/Progress.vue";
 
 export default {
   name: "completion",
-  components: {LineChart},
+  components: {Progress, LineChart},
   computed: {},
   data() {
     return {
