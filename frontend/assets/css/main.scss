@@ -6,6 +6,15 @@
 
 .reading-lists {
   margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
+  grid-gap: 10px;
+  width: 100%;
+  justify-content: center;
+  padding: 5px;
+}
+
+.reading-lists > * {
 }
 
 .reading-list {

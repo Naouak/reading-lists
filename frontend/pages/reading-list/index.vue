@@ -23,8 +23,8 @@
       </nav>
     </div>
 
-    <div class="reading-lists columns is-multiline">
-      <div v-for="list in readingLists" :key="list.id" class="column">
+    <div class="reading-lists">
+      <div v-for="list in readingLists" :key="list.id">
         <ReadingList :list="list" @read="markAsRead" />
       </div>
     </div>
