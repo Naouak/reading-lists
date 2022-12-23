@@ -178,3 +178,23 @@
   max-width: 650px;
 }
 
+.navbar-menu-button{
+  position: absolute;
+  right: 0;
+  padding: 0 10px;
+  height: 3.25rem;
+  line-height: 3.25rem;
+  background: transparent;
+  border: 0;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.nav-menu{
+  position: fixed;
+  top: 52px;
+  background: white;
+  left: 0;
+  right: 0;
+}
