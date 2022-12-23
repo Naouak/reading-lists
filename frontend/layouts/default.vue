@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav
-      class="navbar header has-shadow is-primary"
+      class="nav-bar navbar header has-shadow is-primary"
       role="navigation"
       aria-label="main navigation"
     >
@@ -21,10 +21,7 @@
         <nuxt />
       </div>
 
-      <aside class="nav-menu column section" v-if="menuVisible" @click="menuVisible=false">
-        <p class="menu-label is-hidden-touch">
-          Menu
-        </p>
+      <aside class="nav-menu" v-if="menuVisible" @click="menuVisible=false">
         <ul class="menu-list">
           <li v-for="(item, key) of items" :key="key">
             <nuxt-link :to="item.to" exact-active-class="is-active">
