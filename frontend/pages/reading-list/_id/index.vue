@@ -38,23 +38,19 @@
 
     <div class="reading-lists columns is-multiline" v-if="!editMode">
       <div v-for="entry in readingList.entries" :key="entry.id" class="column">
-
         <ReadingListEntryNormal  :entry="entry" @read="markAsRead(entry.book)" />
       </div>
     </div>
 
     <div class="columns"  v-if="editMode">
-      <div class="column" :class="{'is-6':editMode}">
+      <div class="column reading-list-editable-entries">
         <div v-if="readingList.series.length" class="card" style="margin-bottom: 24px;">
           <div class="card-header">
             <div class="card-header-title">Auto-fill Series</div>
           </div>
-          <div v-if="!editMode" class="card-content">
-            {{seriesNames}}
-          </div>
-          <div v-else class="card-content is-flex" v-for="series in readingList.series" :key="series.id" style="justify-content: space-between; padding: .6rem 1.5rem;">
+          <div class="card-content is-flex" v-for="series in readingList.series" :key="series.id" style="justify-content: space-between; padding: .6rem 1.5rem;">
             <span style="line-height: 36px;">{{series.title}}</span>
-            <button v-if="editMode" class="button is-pulled-right" @click="removeSeries(series)">
+            <button class="button is-pulled-right" @click="removeSeries(series)">
               <b-icon icon="delete" />
               <span>Remove</span>
             </button>
@@ -71,7 +67,7 @@
             </Progress>
           </div>
           <div class="card-content">
-            <ReadingListEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
+            <ReadingListEditableEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
                               :enable-read-before="enableReadBefore"
                               :edit-mode="editMode"
                               :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
@@ -105,10 +101,13 @@ import ReadingListEntry from "~/components/ReadingListEntry";
 import SeriesSelector from "~/components/SeriesSelector";
 import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
 import Progress from "~/components/Progress.vue";
+import ReadingListEditableEntry from "~/components/ReadingListEditableEntry.vue";
 
 export default {
   name: "readingListDetails",
-  components: {Progress, SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal},
+  components: {
+    ReadingListEditableEntry,
+    Progress, SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal},
   data() {
     return {
       readingListId: null,

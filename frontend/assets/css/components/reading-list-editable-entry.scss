@@ -1,0 +1,62 @@
+.reading-list-editable-entry{
+  position: relative;
+  display: flex;
+  margin: 5px 0;
+  border: solid #e1e1e1 1px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #e1e1e1;
+  overflow: hidden;
+
+  .reading-list-editable-entry-cover{
+    width: 150px;
+  }
+
+  .reading-list-editable-entry-metas{
+    padding: 0 10px;
+
+    .reading-list-editable-entry-position{
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: white;
+      padding: 5px;
+      background: rgba(1, 1, 1, 0.5);
+      font-size: larger;
+      font-weight: bolder;
+    }
+
+    .reading-list-editable-entry-title{
+      font-size: larger;
+      font-weight: bolder;
+      margin: 10px 0;
+    }
+  }
+
+  .reading-list-editable-entry-actions{
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 150px;
+    right: 0;
+
+    border-top: solid #e1e1e1 1px;
+
+    button {
+      flex: 1;
+      display: inline-block;
+
+      background-color: transparent;
+      border: 0;
+      padding: 5px;
+      padding-bottom: 10px;
+
+      border-left: solid #e1e1e1 1px;
+
+      &:hover:not(:disabled){
+        cursor: pointer;
+        background-color: #e1e1e1;
+      }
+    }
+  }
+
+}
