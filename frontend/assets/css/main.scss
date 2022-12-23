@@ -2,42 +2,7 @@
 @use 'pages';
 @use 'components';
 
-.progress-bar {
-  position: relative;
-  margin-bottom: 0;
-  line-height: 1.5rem;
-  font-size: 1.1rem;
 
-  progress {
-    height: 1.5rem;
-    margin-bottom: 0!important; // Remove important with buefy
-  }
-
-  progress::-webkit-progress-bar {
-    background-color: #f0e0e0;
-  }
-
-  progress::-webkit-progress-value {
-    background-color: red;
-  }
-
-  .progress-value {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    margin: auto;
-    color: #363636;
-    font-size: 1.1rem;
-    line-height: 1.5rem;
-    text-align: center;
-    font-weight: bold;
-  }
-
-  .progress {
-    border-radius: 0;
-
-  }
-}
 
 .reading-lists {
   margin: 0;
