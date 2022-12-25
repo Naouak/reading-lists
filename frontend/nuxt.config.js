@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 module.exports = {
+  telemetry: false,
+
   mode: 'spa',
   /*
    ** Headers of the page

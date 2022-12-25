@@ -6,13 +6,12 @@
       aria-label="main navigation"
     >
       <div class="navbar-brand">
-        <a class="navbar-item" href="/">
-          My Library
-        </a>
-
-        <button class="navbar-menu-button" @click="menuVisible=!menuVisible">
-          <b-icon icon="menu" />
-        </button>
+        <nuxt-link class="navbar-item" :to="item.to" v-for="(item, key) of items" :key="key" :title="item.title">
+          <span>
+            <b-icon :icon="item.icon" />
+            <span class="is-hidden-mobile">{{ item.title }}</span>
+          </span>
+        </nuxt-link>
       </div>
     </nav>
 
@@ -20,17 +19,6 @@
       <div class="">
         <nuxt />
       </div>
-
-      <aside class="nav-menu" v-if="menuVisible" @click="menuVisible=false">
-        <ul class="menu-list">
-          <li v-for="(item, key) of items" :key="key">
-            <nuxt-link :to="item.to" exact-active-class="is-active">
-              <b-icon :icon="item.icon" />
-              {{ item.title }}
-            </nuxt-link>
-          </li>
-        </ul>
-      </aside>
     </section>
   </div>
 </template>
@@ -42,13 +30,13 @@ export default {
       menuVisible: false,
       items: [
         {
-          title: 'Home',
+          title: 'New Releases',
           icon: 'home',
           to: {name: 'index'},
         },
         {
           title: 'Books',
-          icon: 'lightbulb',
+          icon: 'book-open-page-variant',
           to: {name: 'books'},
         },
         {
@@ -73,11 +61,12 @@ export default {
         },
         {
           title: 'Completion Stats',
-          icon: 'chart-line',
+          icon: 'chart-histogram',
           to: {name: 'completion'}
         },
         {
           title: 'Issue Relations',
+          icon: 'link-variant',
           to: {name: 'book-links'}
         }
       ],
