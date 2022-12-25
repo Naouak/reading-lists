@@ -24,30 +24,30 @@
     }" />
     </div>
 
-    <div class="columns is-multiline">
-      <div class="box column is-2" v-for="(data, year) in stats" :key="year">
-        <h1 class="title">{{ year }}</h1>
-        <div class="year-completion">
-          <Progress :value="data.progress">{{ data.read }} / {{ data.books }} read</Progress>
-        </div>
-        <div class="month-completion">
-          <div v-for="(stat, month) in data.months" :key="month">
-            <Progress :value="stat.progress">{{ months[month] }} - {{ stat.read }} / {{ stat.books }} read</Progress>
-          </div>
-        </div>
+    <div class="columns">
+      <div class="year-completion column is-2">
+        <h1 class="title">Completion per year</h1>
+        <Progress v-for="(data, year) in stats" :data="data" :year="year" :key="year" :value="data.progress">{{year}} - {{ data.read }} / {{ data.books }} read</Progress>
+      </div>
+
+      <div class="columns is-multiline column is-10">
+        <CompletionProgressFullYear v-for="(data, year) in stats" :data="data" :year="year" :key="year" />
       </div>
     </div>
+
+
   </div>
 </template>
 
 <script>
 
 import LineChart from "~/components/LineChart";
+import CompletionProgressFullYear from "~/components/CompletionProgressFullYear.vue";
 import Progress from "~/components/Progress.vue";
 
 export default {
   name: "completion",
-  components: {Progress, LineChart},
+  components: {CompletionProgressFullYear, Progress, LineChart},
   computed: {},
   data() {
     return {
@@ -77,7 +77,11 @@ export default {
       }
 
       $axios.$get('/completion-statistics/?' + apiParams.toString()).then(result => {
-        const stats = result.reduce((acc, o) => {
+        const filteredResult = result.filter((o) => {
+          return o.year !== 1900 && o.year <= (new Date()).getFullYear();
+        });
+
+        const stats = filteredResult.reduce((acc, o) => {
           acc[o.year] = acc[o.year] || {
             books: 0,
             read: 0,
@@ -96,7 +100,7 @@ export default {
           return acc;
         }, {});
 
-        const barChartMonthly = result.reduce((acc, o) => {
+        const barChartMonthly = filteredResult.reduce((acc, o) => {
           acc.datasets[0].data.push({t: new Date(o.year, o.month), y: o.read});
           acc.datasets[1].data.push({t: new Date(o.year, o.month), y: o.books});
           return acc;
@@ -117,7 +121,7 @@ export default {
           ],
         });
 
-        const yearlyData = result.reduce((acc, o) => {
+        const yearlyData = filteredResult.reduce((acc, o) => {
           acc[o.year] = acc[o.year] || {books: 0, read: 0};
           acc[o.year].books += o.books;
           acc[o.year].read += o.read;

@@ -1,6 +1,7 @@
 <template>
   <div class="progress-bar">
-    <progress class="progress" max="100" :value="value"></progress>
+    <div v-if="indeterminate" class="progress-indeterminate"></div>
+    <progress v-else class="progress" max="100" :value="value"></progress>
     <p class="progress-value"><slot></slot></p>
   </div>
 </template>
@@ -10,12 +11,11 @@ export default {
   name: "Progress",
   props: {
     "value": {
-      default: ""
-    }
+      default: "",
+    },
+    "indeterminate": {
+      default: false,
+    },
   }
 }
 </script>
-
-<style scoped>
-
-</style>

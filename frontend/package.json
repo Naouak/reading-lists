@@ -16,11 +16,6 @@
     "*.{js,vue}": "npm run lint",
     "*.{css,vue}": "stylelint"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "dependencies": {
     "@nuxtjs/auth": "^4.9.1",
     "@nuxtjs/axios": "^5.3.6",
