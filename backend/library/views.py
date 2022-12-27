@@ -87,6 +87,7 @@ class BookViewSet(viewsets.ModelViewSet):
         serializer = ReadingHistorySerializer(history)
         return Response(serializer.data)
 
+
 class ReadingListViewSet(viewsets.ModelViewSet):
     queryset = ReadingList.objects.all().order_by('title')
     serializer_class = ReadingListSerializer
@@ -105,10 +106,12 @@ class ReadingListViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+
 class ReadingHistoryViewSet(viewsets.ModelViewSet):
     queryset = ReadingHistory.objects.all().order_by('-read_date')
     serializer_class = ReadingHistorySerializer
     permission_classes = [IsAuthenticated]
+
 
 class BookLinkViewSet(viewsets.ModelViewSet):
     queryset = BookLink.objects.all().order_by('-created')
@@ -125,6 +128,7 @@ class BookLinkViewSet(viewsets.ModelViewSet):
 
         serializer = BookLinkSerializer(link)
         return Response(serializer.data)
+
 
 @permission_classes((IsAuthenticated,))
 class ReadingListEntryViewSet(viewsets.ViewSet):
@@ -192,6 +196,7 @@ class ReadingListEntryViewSet(viewsets.ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @permission_classes((IsAuthenticated,))
 class ReadingListSeriesViewSet(viewsets.ViewSet):
     def list(self, request, reading_list_pk):
@@ -217,6 +222,7 @@ class ReadingListSeriesViewSet(viewsets.ViewSet):
         ReadingList.objects.get(pk=reading_list_pk).series.remove(series)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 @api_view(['GET'])
 def statistics(request):
     stats = {}
@@ -234,30 +240,36 @@ def statistics(request):
     previous_year = last_year - timedelta(days=365)
 
     stats['read_last_week'] = BookReadingHistory.objects.filter(read_date__gte=last_week).count()
-    stats['read_previous_week'] = BookReadingHistory.objects.filter(read_date__gte=previous_week, read_date__lt=last_week).count()
+    stats['read_previous_week'] = BookReadingHistory.objects.filter(read_date__gte=previous_week,
+                                                                    read_date__lt=last_week).count()
     stats['read_last_month'] = BookReadingHistory.objects.filter(read_date__gte=last_month).count()
-    stats['read_previous_month'] = BookReadingHistory.objects.filter(read_date__gte=previous_month, read_date__lt=last_month).count()
+    stats['read_previous_month'] = BookReadingHistory.objects.filter(read_date__gte=previous_month,
+                                                                     read_date__lt=last_month).count()
     stats['read_last_year'] = BookReadingHistory.objects.filter(read_date__gte=last_year).count()
-    stats['read_previous_year'] = BookReadingHistory.objects.filter(read_date__gte=previous_year, read_date__lt=last_year).count()
+    stats['read_previous_year'] = BookReadingHistory.objects.filter(read_date__gte=previous_year,
+                                                                    read_date__lt=last_year).count()
 
     stats['added_last_week'] = Book.objects.filter(availability_date__gte=last_week).count()
-    stats['added_previous_week'] = Book.objects.filter(availability_date__gte=previous_week, availability_date__lt=last_week).count()
+    stats['added_previous_week'] = Book.objects.filter(availability_date__gte=previous_week,
+                                                       availability_date__lt=last_week).count()
     stats['added_last_month'] = Book.objects.filter(availability_date__gte=last_month).count()
-    stats['added_previous_month'] = Book.objects.filter(availability_date__gte=previous_month, availability_date__lt=last_month).count()
+    stats['added_previous_month'] = Book.objects.filter(availability_date__gte=previous_month,
+                                                        availability_date__lt=last_month).count()
     stats['added_last_year'] = Book.objects.filter(availability_date__gte=last_year).count()
-    stats['added_previous_year'] = Book.objects.filter(availability_date__gte=previous_year, availability_date__lt=last_year).count()
+    stats['added_previous_year'] = Book.objects.filter(availability_date__gte=previous_year,
+                                                       availability_date__lt=last_year).count()
 
     return Response(stats)
 
+
 @api_view(['GET'])
 def completion(request):
-
     start = request.query_params.get('from', None)
     end = request.query_params.get('to', None)
 
-    book_count = Book.objects\
-        .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date'))\
-        .values('year','month')\
+    book_count = Book.objects \
+        .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date')) \
+        .values('year', 'month') \
         .annotate(books=Count('id')) \
         .order_by('year', 'month') \
         .all()
@@ -277,8 +289,8 @@ def completion(request):
     book_read = query_set \
         .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date')) \
         .values('year', 'month') \
-        .annotate(read=Count('last_read_history__id'))\
-        .order_by('year', 'month')\
+        .annotate(read=Count('last_read_history__id')) \
+        .order_by('year', 'month') \
         .all()
 
     book_read_map = {}
@@ -294,10 +306,10 @@ def completion(request):
 
 @api_view(['GET'])
 def read_history(request):
-    read = BookReadingHistory.objects\
-        .filter(read_date__gte=parse_datetime('2020-05-16T00:00:00Z'))\
-        .values('read_date__date')\
-        .order_by('read_date__date')\
+    read = BookReadingHistory.objects \
+        .filter(read_date__gte=parse_datetime('2020-05-16T00:00:00Z')) \
+        .values('read_date__date') \
+        .order_by('read_date__date') \
         .annotate(read=Count('id'))
 
     for read_entry in read:
@@ -305,3 +317,34 @@ def read_history(request):
         del read_entry['read_date__date']
 
     return Response(read)
+
+
+@api_view(['GET'])
+def book_links_graph(request):
+    links = BookLink.objects.all()
+    nodes = {}
+    edges = []
+    for link in links:
+        for node in [link.source, link.target]:
+            if node.id not in nodes:
+                nodes[node.id] = {
+                    'data': {
+                        'id': str(node.id),
+                        'SUID': node.id,
+                        'name': node.title,
+                        'shared_name': node.title,
+                        'img': node.cover_url
+                    }
+                }
+        edges.append({
+            'data': {
+                "source": str(link.source_id),
+                "target": str(link.target_id),
+            }
+        })
+    return Response({
+        'elements': {
+            'nodes': nodes.values(),
+            'edges': edges
+        }
+    })

@@ -7,6 +7,9 @@
         <b-icon icon="plus" />
         <span>Create a link</span>
       </nuxt-link>
+      <nuxt-link class="button is-link" :to="{name: 'book-links-chart'}">
+        <span>Chart Data</span>
+      </nuxt-link>
     </div>
 
     <div class="links">
