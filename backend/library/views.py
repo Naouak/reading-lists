@@ -321,7 +321,7 @@ def read_history(request):
 
 @api_view(['GET'])
 def book_links_graph(request):
-    links = BookLink.objects.all()
+    links = BookLink.objects.exclude(target_id__isnull=True).all()
     nodes = {}
     edges = []
     for link in links:
