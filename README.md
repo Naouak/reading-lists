@@ -36,7 +36,8 @@ cd ../frontend/
 npm ci
 cp .env.sample .env
 # edit .env with your values
-npm run-script build
+NODE_OPTIONS=--openssl-legacy-provider npm run build
+# That NODE_OPTIONS is necessary for nuxt2 build on later node versions. Blame Nuxt
 ```
 
 ## Start for development
