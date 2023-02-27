@@ -1,7 +1,7 @@
 <template>
   <div class="reading-list-entry" :class="{'read': entry.book.last_read_history}">
     <div class="cover">
-      <a target="_blank" :href="entry.book.read_online_url">
+      <a target="_blank" :href="read_url">
         <img :src="entry.book.cover_url" :alt="entry.book.title">
 
         <div class="reading-list-position">
@@ -40,6 +40,14 @@ export default {
     enableReadBefore: {
       default: false,
     },
+  },
+  computed: {
+    read_url() {
+      if (navigator.userAgent.match(/Android/i)){
+        return `https://www.marvel.com/comics/issue/${this.entry.book.external_id}/comics-collection`;
+      }
+      return this.entry.book.read_online_url;
+    }
   }
 };
 </script>
