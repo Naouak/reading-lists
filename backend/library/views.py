@@ -348,3 +348,48 @@ def book_links_graph(request):
             'edges': edges
         }
     })
+
+@api_view(['GET'])
+def reading_report(request):
+    default_date = datetime.today()
+    year = request.query_params.get('year', default_date.year)
+    month = request.query_params.get('month', default_date.month)
+
+    read_books = BookReadingHistory.objects.filter(read_date__year=year, read_date__month=month)
+    read_series = {}
+    for read_book in read_books:
+        series = read_book.book.series
+        if series.title not in read_series:
+            read_series[series.title] = []
+        read_series[series.title].append(read_book)
+
+    seriesList = {}
+    for series in read_series:
+        seriesList[series] = ReadingHistorySerializer(read_series[series], many=True).data
+
+
+    read_reading_list = {}
+    for read_book in read_books:
+        reading_list_entries = read_book.book.readinglistentry_set.all()
+        for reading_list_entry in reading_list_entries:
+            reading_list = reading_list_entry.reading_list
+
+            if reading_list.title not in read_reading_list:
+                read_reading_list[reading_list.title] = {
+                    'total_count': reading_list.entries.count(),
+                    'read': []
+                }
+            read_reading_list[reading_list.title]['read'].append(read_book)
+
+    readingLists = {}
+    for readingList in read_reading_list:
+        readingLists[readingList] = {
+            'total_count': read_reading_list[readingList]['total_count'],
+            'read': ReadingHistorySerializer(read_reading_list[readingList]['read'], many=True).data
+        }
+
+    return Response({
+        'read_books': ReadingHistorySerializer(read_books, many=True).data,
+        'read_series': seriesList,
+        'read_lists': readingLists,
+    })

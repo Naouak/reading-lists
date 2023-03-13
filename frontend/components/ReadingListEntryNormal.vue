@@ -4,7 +4,7 @@
       <a target="_blank" :href="read_url">
         <img :src="entry.book.cover_url" :alt="entry.book.title">
 
-        <div class="reading-list-position">
+        <div v-if="entry.position" class="reading-list-position">
           <b-icon icon="check" class="has-text-success" v-if="entry.book.last_read_history" /> # {{entry.position}}
         </div>
 
@@ -16,7 +16,7 @@
 
       <div class="mark-as-read">
           <span class="book-pub-date"><DateDisplay :date="entry.book.pub_date" /></span>
-          <button class="mark-as-read-button button" @click="$emit('read')">
+          <button v-if="readable" class="mark-as-read-button button" @click="$emit('read')">
             <b-icon icon="check" />
             <span>Mark as read <span v-if="entry.book.last_read_history">again</span></span>
           </button>
@@ -40,6 +40,9 @@ export default {
     enableReadBefore: {
       default: false,
     },
+    readable: {
+      default: true,
+    }
   },
   computed: {
     read_url() {

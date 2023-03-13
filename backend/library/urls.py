@@ -21,5 +21,6 @@ urlpatterns = [
     path('reading-statistics/', views.statistics),
     path('completion-statistics/', views.completion),
     path('reading-history-summary/', views.read_history),
-    path('book-link-graph/', views.book_links_graph)
+    path('book-link-graph/', views.book_links_graph),
+    path('reading-report/', views.reading_report)
 ]

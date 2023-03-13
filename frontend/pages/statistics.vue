@@ -44,6 +44,10 @@
       </div>
     </div>
 
+    <div class="box">
+      <a class="button is-primary" href="/reading-report/">Monthly Reports</a>
+    </div>
+
 
   </div>
 </template>
