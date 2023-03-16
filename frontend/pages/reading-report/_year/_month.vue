@@ -229,8 +229,8 @@ export default {
     weekly_heatmap() {
       return this.stats.read_books.reduce((acc, item) => {
         const date = new Date(item.read_date);
-        const day = (date.getUTCDay()+13)%7;
-        const hour = date.getUTCHours();
+        const day = (date.getDay()+13)%7;
+        const hour = date.getHours();
         if (!acc[day]) {
           acc[day] = new Array(24).fill(0);
         }
