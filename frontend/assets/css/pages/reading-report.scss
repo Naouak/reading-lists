@@ -100,4 +100,21 @@
     }
   }
 
+  .weekly-heatmap{
+    width: 100%;
+
+    table{
+      width: 100%;
+
+      th,td{
+        padding: 2px;
+        text-align: center;
+      }
+
+      td{
+        color: white;
+      }
+    }
+  }
+
 }

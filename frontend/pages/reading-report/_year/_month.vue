@@ -2,10 +2,12 @@
   <div class="reading-report">
     <div class="page-header">
       <div class="navigation">
-        <a class="button is-primary" :href="previous_month">Previous Month</a> <a class="button is-primary" :href="next_month">Next Month</a>
+        <a class="button is-primary" :href="previous_month">Previous Month</a> <a class="button is-primary"
+                                                                                  :href="next_month">Next Month</a>
       </div>
       <h1 class="title">Reading Report - {{ months[month] }} {{ year }}</h1>
     </div>
+
 
     <div class="global-stats">
       <div class="stat-block">
@@ -96,6 +98,24 @@
       </div>
     </div>
 
+
+    <div class="weekly-heatmap stat-block">
+      <h2>When I read</h2>
+      <table>
+        <tr>
+          <th></th>
+          <th v-for="hour in [...Array(24).keys()]" :key="hour">{{ ("00" + hour).slice(-2) }}:00</th>
+        </tr>
+        <tr v-for="(hours, day) in weekly_heatmap" :key="day">
+          <th>{{ days[day] }}</th>
+          <td v-for="(read_per_hour, hour) in hours" :key="hour"
+              :style="{'backgroundColor':'rgba(0,255,0,'+(read_per_hour*(1/max_weekly_heatmap))+')'}">
+            {{ read_per_hour }}
+          </td>
+        </tr>
+      </table>
+    </div>
+
     <div class="report-which-read">
       <div v-if="stats.read_books.length > 0" class="report-which-read-first">
         <h2>First Read</h2>
@@ -138,11 +158,9 @@ export default {
         read_lists: {},
         read_series: {},
       },
-      // read_series: [],
-      // read_lists: [],
-      // read_per_year: {},
       months: ["", "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"]
+        "July", "August", "September", "October", "November", "December"],
+      days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday","Sunday"],
     }
   },
   computed: {
@@ -179,7 +197,7 @@ export default {
       return new Date(this.year, this.month, 0).getDate();
     },
     read_per_day() {
-      return Math.round(this.stats.read_books.length / this.number_of_days * 100)/100;
+      return Math.round(this.stats.read_books.length / this.number_of_days * 100) / 100;
     },
     read_each_day() {
       return this.stats.read_books.reduce((acc, item) => {
@@ -198,15 +216,30 @@ export default {
     skipped_days() {
       return this.number_of_days - Object.values(this.read_each_day).length;
     },
-    previous_month(){
-      const month = (this.month-1)||12;
-      const year = month===12?this.year-1:this.year;
-      return "/reading-report/"+year+"/"+month;
+    previous_month() {
+      const month = (this.month - 1) || 12;
+      const year = month === 12 ? this.year - 1 : this.year;
+      return "/reading-report/" + year + "/" + month;
     },
-    next_month(){
-      const month = parseInt(this.month)===12?1:(this.month- -1);
-      const year = month===1?this.year- -1:this.year;
-      return "/reading-report/"+year+"/"+month;
+    next_month() {
+      const month = parseInt(this.month) === 12 ? 1 : (this.month - -1);
+      const year = month === 1 ? this.year - -1 : this.year;
+      return "/reading-report/" + year + "/" + month;
+    },
+    weekly_heatmap() {
+      return this.stats.read_books.reduce((acc, item) => {
+        const date = new Date(item.read_date);
+        const day = (date.getUTCDay()+13)%7;
+        const hour = date.getUTCHours();
+        if (!acc[day]) {
+          acc[day] = new Array(24).fill(0);
+        }
+        acc[day][hour] = (acc[day][hour] || 0) + 1;
+        return acc;
+      }, []);
+    },
+    max_weekly_heatmap() {
+      return Math.max(...this.weekly_heatmap.map((perHours) => Math.max(...perHours)));
     }
   },
   beforeMount() {
