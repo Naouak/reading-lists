@@ -4,7 +4,7 @@ from django.db.models import F, Max, Count, Min
 from django.db.models.functions import TruncYear, TruncMonth, ExtractYear, ExtractMonth, Extract
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
-from django.utils.datetime_safe import datetime
+from django.utils.datetime_safe import datetime, date
 from django.utils import timezone
 
 from rest_framework import viewsets, permissions, status, filters
@@ -53,6 +53,8 @@ class BookViewSet(viewsets.ModelViewSet):
         series = self.request.query_params.get('series', None)
         search = self.request.query_params.get('search', None)
         exclude_term = self.request.query_params.get('exclude_term', None)
+        only_available = self.request.query_params.get('only_available', None)
+        only_published = self.request.query_params.get('only_published', None)
 
         external_source = self.request.query_params.get('external_source', None)
         external_id = self.request.query_params.get('external_id', None)
@@ -69,7 +71,14 @@ class BookViewSet(viewsets.ModelViewSet):
             for term in search_terms:
                 queryset = queryset.filter(title__icontains=term)
         if exclude_term is not None:
-            queryset = queryset.exclude(title__icontains=exclude_term)
+            exclude = exclude_term.split(",")
+            for term in exclude:
+                queryset = queryset.exclude(title__icontains=term)
+
+        if only_available is not None:
+            queryset = queryset.filter(availability_date__lte=date.today())
+        if only_published is not None:
+            queryset = queryset.filter(pub_date__lte=date.today())
 
         return queryset
 
