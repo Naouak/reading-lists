@@ -87,6 +87,7 @@ export default {
       hasPreviousPage: false,
       isScheduledForUpdate: false,
       hideSelectedItems: false,
+      cancelToken: null,
     };
   },
   computed: {
@@ -125,10 +126,20 @@ export default {
     },
     updateComponent() {
       this.isScheduledForUpdate = false;
-      this.$axios.$get(this.getApiUrl()).then(response => {
+
+      if (this.cancelToken) {
+        this.cancelToken();
+      }
+      this.$axios.$get(
+        this.getApiUrl(),
+        {
+          cancelToken: new this.$axios.CancelToken(c => { this.cancelToken = c })
+        }
+      ).then(response => {
         this.hasNextPage = !!response.next;
         this.hasPreviousPage = !!response.previous;
         this.books = response.results;
+        this.cancelToken = null;
       });
     },
     getApiUrl() {
