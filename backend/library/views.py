@@ -236,7 +236,9 @@ class ReadingListSeriesViewSet(viewsets.ViewSet):
 def statistics(request):
     stats = {}
 
-    stats['total_books'] = Book.objects.count()
+    book_queryset = Book.objects.exclude(title__icontains="trade paperback").exclude(pub_date__year=1900)
+
+    stats['total_books'] = book_queryset.count()
     stats['read_books'] = BookReadingHistory.objects.count()
 
     current_date = timezone.make_aware(datetime.today())
@@ -258,14 +260,14 @@ def statistics(request):
     stats['read_previous_year'] = BookReadingHistory.objects.filter(read_date__gte=previous_year,
                                                                     read_date__lt=last_year).count()
 
-    stats['added_last_week'] = Book.objects.filter(availability_date__gte=last_week).count()
-    stats['added_previous_week'] = Book.objects.filter(availability_date__gte=previous_week,
+    stats['added_last_week'] = book_queryset.filter(availability_date__gte=last_week).count()
+    stats['added_previous_week'] = book_queryset.filter(availability_date__gte=previous_week,
                                                        availability_date__lt=last_week).count()
-    stats['added_last_month'] = Book.objects.filter(availability_date__gte=last_month).count()
-    stats['added_previous_month'] = Book.objects.filter(availability_date__gte=previous_month,
+    stats['added_last_month'] = book_queryset.filter(availability_date__gte=last_month).count()
+    stats['added_previous_month'] = book_queryset.filter(availability_date__gte=previous_month,
                                                         availability_date__lt=last_month).count()
-    stats['added_last_year'] = Book.objects.filter(availability_date__gte=last_year).count()
-    stats['added_previous_year'] = Book.objects.filter(availability_date__gte=previous_year,
+    stats['added_last_year'] = book_queryset.filter(availability_date__gte=last_year).count()
+    stats['added_previous_year'] = book_queryset.filter(availability_date__gte=previous_year,
                                                        availability_date__lt=last_year).count()
 
     return Response(stats)
@@ -277,6 +279,7 @@ def completion(request):
     end = request.query_params.get('to', None)
 
     book_count = Book.objects \
+        .exclude(title__icontains="trade paperback") \
         .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date')) \
         .values('year', 'month') \
         .annotate(books=Count('id')) \
