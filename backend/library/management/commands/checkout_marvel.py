@@ -67,6 +67,7 @@ class Command(BaseCommand):
             # pub_date
             object.pub_date = book.dates.on_sale or datetime.datetime(1900, 1, 1, 12, 0, 0, 0)
             object.availability_date = book.dates.unlimited
+            object.type = str(book.format or 'comic').lower()[:64]
             # series
             if book.series:
                 series_id = book.series.id
