@@ -365,9 +365,12 @@ def book_links_graph(request):
 def reading_report(request):
     default_date = datetime.today()
     year = request.query_params.get('year', default_date.year)
-    month = request.query_params.get('month', default_date.month)
+    month = request.query_params.get('month', None)
 
-    read_books = BookReadingHistory.objects.filter(read_date__year=year, read_date__month=month)
+    read_books = BookReadingHistory.objects.filter(read_date__year=year)
+    if month:
+        read_books = read_books.filter(read_date__month=month)
+
     read_series = {}
     for read_book in read_books:
         series = read_book.book.series

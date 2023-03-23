@@ -46,6 +46,7 @@
 
     <div class="box">
       <a class="button is-primary" href="/reading-report/">Monthly Reports</a>
+      <a class="button is-primary" :href="'/reading-report/'+(new Date().getFullYear())">Yearly Reports</a>
     </div>
 
 
