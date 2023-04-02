@@ -1,3 +1,16 @@
 .year-completion{
   margin-bottom: 10px;
 }
+.completion-page{
+  .page-header{
+    display: flex;
+  }
+
+  h1{
+    width: 100%;
+  }
+
+  .navigation{
+    text-align: right;
+  }
+}

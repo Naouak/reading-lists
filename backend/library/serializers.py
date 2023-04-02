@@ -44,3 +44,10 @@ class BookLinkSerializer(serializers.ModelSerializer):
         model = BookLink
         fields = '__all__'
         depth = 1
+
+class CompletionSeriesSerializer(serializers.Serializer):
+    series = serializers.CharField(source='series__title')
+    book_count = serializers.IntegerField()
+    book_read = serializers.IntegerField(default=0)
+    first_book = serializers.DateTimeField(format='%Y-%m-%d')
+    last_book = serializers.DateTimeField(format='%Y-%m-%d')

@@ -235,3 +235,41 @@
   cursor: pointer;
 }
 
+.list-block {
+    flex: 1;
+    min-width: 300px;
+
+    margin: 5px;
+    border: solid #e1e1e1 1px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #e1e1e1;
+    padding: 5px;
+
+    table{
+      width: 100%;
+
+      .list-item-index{
+        padding-right: 5px;
+      }
+      .list-item-value{
+        text-align: right;
+      }
+
+      td, th{
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+
+      tr:nth-child(odd){
+        background: #e1e1e1;
+      }
+
+      tr > :first-child{
+        padding-left: 10px;
+      }
+
+      tr > :last-child{
+        padding-right: 10px;
+      }
+    }
+  }

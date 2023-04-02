@@ -1,17 +1,25 @@
 <template>
-  <div class="section">
-    <h1 class="title">Library completion stats</h1>
+  <div class="completion-page">
+    <div class="page-header">
+      <h1 class="title">Library completion stats</h1>
 
-    <div class="box">
-      <form action="/completion" method="get">
-        <input type="datetime-local" v-model="from" name="from" />
-        <input type="datetime-local" v-model="to" name="to" />
-        <div class="button" @click="updateComponent">FILTER</div>
-      </form>
+      <div class="navigation">
+        <a class="button is-primary" href="/completion-series">Series Completion</a>
+      </div>
     </div>
 
-    <div style="" class="box">
-      <line-chart :data="barChartYearly" :options="{
+    <div class="section">
+
+      <div class="box">
+        <form action="/completion" method="get">
+          <input type="datetime-local" v-model="from" name="from" />
+          <input type="datetime-local" v-model="to" name="to" />
+          <div class="button" @click="updateComponent">FILTER</div>
+        </form>
+      </div>
+
+      <div style="" class="box">
+        <line-chart :data="barChartYearly" :options="{
         maintainAspectRatio: false,
         scales: {
             xAxes: [{
@@ -21,21 +29,26 @@
                 }
             }]
         }
-    }" />
-    </div>
-
-    <div class="columns">
-      <div class="year-completion column is-2">
-        <h1 class="title">Completion per year</h1>
-        <Progress v-for="(data, year) in stats" :data="data" :year="year" :key="year" :value="data.progress">{{year}} - {{ data.read }} / {{ data.books }} read</Progress>
+    }" :height="600" />
       </div>
 
-      <div class="columns is-multiline column is-10">
-        <CompletionProgressFullYear v-for="(data, year) in stats" :data="data" :year="year" :key="year" />
+      <div class="columns">
+        <div class="year-completion column is-2">
+          <h1 class="title">Completion per year</h1>
+          <Progress v-for="(data, year) in stats" :data="data" :year="year" :key="year" :value="data.progress">{{
+              year
+            }}
+            - {{ data.read }} / {{ data.books }} read
+          </Progress>
+        </div>
+
+        <div class="columns is-multiline column is-10">
+          <CompletionProgressFullYear v-for="(data, year) in stats" :data="data" :year="year" :key="year" />
+        </div>
       </div>
+
+
     </div>
-
-
   </div>
 </template>
 

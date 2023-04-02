@@ -16,7 +16,7 @@ from rest_framework.response import Response
 
 from library.models import BookSeries, Book, ReadingList, ReadingListEntry, ReadingHistory, BookReadingHistory, BookLink
 from library.serializers import BookSeriesSerializer, BookSerializer, ReadingListSerializer, ReadingListEntrySerializer, \
-    ReadingHistorySerializer, BookLinkSerializer
+    ReadingHistorySerializer, BookLinkSerializer, CompletionSeriesSerializer
 
 
 def index(request):
@@ -262,13 +262,13 @@ def statistics(request):
 
     stats['added_last_week'] = book_queryset.filter(availability_date__gte=last_week).count()
     stats['added_previous_week'] = book_queryset.filter(availability_date__gte=previous_week,
-                                                       availability_date__lt=last_week).count()
+                                                        availability_date__lt=last_week).count()
     stats['added_last_month'] = book_queryset.filter(availability_date__gte=last_month).count()
     stats['added_previous_month'] = book_queryset.filter(availability_date__gte=previous_month,
-                                                        availability_date__lt=last_month).count()
+                                                         availability_date__lt=last_month).count()
     stats['added_last_year'] = book_queryset.filter(availability_date__gte=last_year).count()
     stats['added_previous_year'] = book_queryset.filter(availability_date__gte=previous_year,
-                                                       availability_date__lt=last_year).count()
+                                                        availability_date__lt=last_year).count()
 
     return Response(stats)
 
@@ -317,6 +317,32 @@ def completion(request):
 
 
 @api_view(['GET'])
+def completion_series(request):
+    start = request.query_params.get('from', None)
+    end = request.query_params.get('to', None)
+
+    query_set = Book.objects.exclude(title__icontains="Trade Paperback").exclude(pub_date__lt='1930-01-01T00:00:00Z')
+    if start:
+        try:
+            query_set = query_set.filter(last_read_history__read_date__gt=parse_datetime(start))
+        except:
+            pass
+    if end:
+        try:
+            query_set = query_set.filter(last_read_history__read_date__lte=parse_datetime(end))
+        except:
+            pass
+
+    book_read = query_set \
+        .values('series__title') \
+        .annotate(book_count=Count('id'),book_read=Count('last_read_history__id'), first_book=Min('pub_date'), last_book=Max('pub_date')) \
+        .exclude(book_count__lte=1)
+
+    serializer = CompletionSeriesSerializer(book_read, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
 def read_history(request):
     read = BookReadingHistory.objects \
         .filter(read_date__gte=parse_datetime('2020-05-16T00:00:00Z')) \
@@ -361,6 +387,7 @@ def book_links_graph(request):
         }
     })
 
+
 @api_view(['GET'])
 def reading_report(request):
     default_date = datetime.today()
@@ -381,7 +408,6 @@ def reading_report(request):
     seriesList = {}
     for series in read_series:
         seriesList[series] = ReadingHistorySerializer(read_series[series], many=True).data
-
 
     read_reading_list = {}
     for read_book in read_books:
