@@ -236,7 +236,10 @@ class ReadingListSeriesViewSet(viewsets.ViewSet):
 def statistics(request):
     stats = {}
 
-    book_queryset = Book.objects.exclude(title__icontains="trade paperback").exclude(pub_date__year=1900)
+    book_queryset = Book.objects\
+        .exclude(title__icontains="trade paperback")\
+        .exclude(title__icontains='(Hardcover)')\
+        .exclude(pub_date__year=1900)
 
     stats['total_books'] = book_queryset.count()
     stats['read_books'] = BookReadingHistory.objects.count()
@@ -280,6 +283,7 @@ def completion(request):
 
     book_count = Book.objects \
         .exclude(title__icontains="trade paperback") \
+        .exclude(title__icontains='(Hardcover)') \
         .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date')) \
         .values('year', 'month') \
         .annotate(books=Count('id')) \
@@ -321,7 +325,10 @@ def completion_series(request):
     start = request.query_params.get('from', None)
     end = request.query_params.get('to', None)
 
-    query_set = Book.objects.exclude(title__icontains="Trade Paperback").exclude(pub_date__lt='1930-01-01T00:00:00Z')
+    query_set = Book.objects\
+        .exclude(title__icontains="Trade Paperback") \
+        .exclude(title__icontains='(Hardcover)') \
+        .exclude(pub_date__lt='1930-01-01T00:00:00Z')
     if start:
         try:
             query_set = query_set.filter(last_read_history__read_date__gt=parse_datetime(start))
