@@ -1,3 +1,4 @@
+import json
 import time
 import datetime
 
@@ -88,6 +89,7 @@ class Command(BaseCommand):
         offset = 0
         limit = 100
         done = False
+        total = None
         while not done:
             print("Checking page %d " % offset)
             retry = 3
@@ -99,8 +101,11 @@ class Command(BaseCommand):
                         'offset': offset,
                     })
 
+                    if total is None:
+                        total = comics.response['data']['total']
+
                     # Retry a page if it got empty results just to be sure
-                    if len(comics) == 0 and retry > 1:
+                    if len(comics) == 0:
                         print("Empty results, let's try again")
                         retry = retry - 1
                         continue
@@ -108,7 +113,7 @@ class Command(BaseCommand):
                     retry = 0
                     self.import_comics(comics)
 
-                    if len(comics) < limit or max_pages and max_pages >= offset / limit:
+                    if (total and offset < total) or max_pages and max_pages >= offset / limit:
                         done = True
                 except ApiError as error:
                     print("Error with API:")
