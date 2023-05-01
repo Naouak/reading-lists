@@ -168,9 +168,7 @@ MARVEL_API = {
     'PRIVATE_KEY': os.getenv('MARVEL_API_PRIVATE_KEY'),
 }
 
-CORS_ORIGIN_WHITELIST = [
-    os.getenv('FRONTEND_URL'),
-]
+CORS_ORIGIN_WHITELIST = os.getenv('FRONTEND_URL').split(',')
 
 OAUTH2_PROVIDER = {
     # this is the list of available scopes

@@ -20,13 +20,17 @@ class Command(BaseCommand):
         parser.add_argument('type', choices=['series', 'comics'], type=str)
         parser.add_argument('-p', '--max_pages', dest='max_pages', metavar='N', type=int,
                             help='Stop after checking N pages')
+        parser.add_argument('-o', '--older_first', dest='older_first', action='store_true',
+                            help='Start with older first (used to check that older issues are still in the catalog)')
+        parser.set_defaults(older_first=False)
 
     def handle(self, *args, **options):
         type = options['type']
         max_pages = options['max_pages']
+        older_first = options['older_first']
 
         if type == "comics":
-            self.doComics(max_pages)
+            self.doComics(max_pages, older_first)
         elif type == "series":
             self.doSeries()
 
@@ -80,7 +84,7 @@ class Command(BaseCommand):
                     object.series = series
             object.save()
 
-    def doComics(self, max_pages = None):
+    def doComics(self, max_pages=None, older_first=False):
         offset = 0
         limit = 100
         done = False
@@ -90,14 +94,21 @@ class Command(BaseCommand):
             while retry > 0:
                 try:
                     comics = self.api_client.comics({
-                        'orderBy': '-modified',
+                        'orderBy': '-modified' if not older_first else 'modified',
                         'limit': limit,
                         'offset': offset,
                     })
+
+                    # Retry a page if it got empty results just to be sure
+                    if len(comics) == 0 and retry > 1:
+                        print("Empty results, let's try again")
+                        retry = retry - 1
+                        continue
+
                     retry = 0
                     self.import_comics(comics)
 
-                    if len(comics) < limit or max_pages and max_pages >= offset/limit:
+                    if len(comics) < limit or max_pages and max_pages >= offset / limit:
                         done = True
                 except ApiError as error:
                     print("Error with API:")
