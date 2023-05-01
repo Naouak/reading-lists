@@ -120,6 +120,11 @@ class Command(BaseCommand):
                     print(error)
                     time.sleep(1)
                     retry = retry - 1
+                except Exception as error:
+                    print("General Error:")
+                    print(error)
+                    time.sleep(1)
+                    retry = retry - 1
 
             offset += 100
             time.sleep(1)
