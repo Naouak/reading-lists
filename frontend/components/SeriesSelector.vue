@@ -44,9 +44,15 @@
 
             <div class="field has-addons">
               <p class="control">
-                <button class="button" v-if="!selectedSeries.includes(series.id)" @click="selectBook(series)">
+                <button class="button" v-if="!selectedSeries.includes(series.id)" @click="subscribeSeries(series)">
                   <b-icon icon="plus" />
-                  <span>Select</span>
+                  <span>Subscribe</span>
+                </button>
+              </p>
+              <p class="control">
+                <button class="button" @click="addSeries(series)">
+                  <b-icon icon="plus" />
+                  <span>Add every books</span>
                 </button>
               </p>
             </div>
@@ -129,8 +135,11 @@ export default {
       }
       return '/series/?' + params.join('&');
     },
-    selectBook(book) {
-      this.$emit('series-selected', book);
+    subscribeSeries(series) {
+      this.$emit('series-subscribed', series);
+    },
+    addSeries(series) {
+      this.$emit('series-selected', series);
     }
   },
 

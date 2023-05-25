@@ -1,5 +1,8 @@
 <template>
   <section class="section" v-if="readingList">
+
+
+
     <div class="columns is-pulled-right">
       <div class="column field">
         <div class="control">
@@ -7,13 +10,16 @@
           <button v-else @click="editMode=!editMode" class="button is-primary">End Edit</button>
           <button v-if="readingList.archived" class="button is-danger" @click="archive">Unarchive</button>
           <button v-else class="button is-danger" @click="archive">Archive</button>
-          <button v-if="!enableReadBefore" class="button is-primary" @click="enableReadBefore=!enableReadBefore">Enable Read Before</button>
-          <button v-else class="button is-primary" @click="enableReadBefore=!enableReadBefore">Disable Read Before</button>
+          <button v-if="!enableReadBefore" class="button is-primary" @click="enableReadBefore=!enableReadBefore">Enable
+            Read Before
+          </button>
+          <button v-else class="button is-primary" @click="enableReadBefore=!enableReadBefore">Disable Read Before
+          </button>
         </div>
       </div>
     </div>
 
-    <h1 class="title is-clearfix" v-if="!editMode">Reading list: {{readingList.title}}</h1>
+    <h1 class="title is-clearfix" v-if="!editMode">Reading list: {{ readingList.title }}</h1>
     <div v-else class="field has-addons is-clearfix" style="margin-bottom: 40px;">
       <div class="control is-expanded">
         <input type="text" v-model="readingList.title" class="input" />
@@ -38,18 +44,26 @@
 
     <div class="reading-lists columns is-multiline" v-if="!editMode">
       <div v-for="entry in readingList.entries" :key="entry.id" class="column">
-        <ReadingListEntryNormal  :entry="entry" @read="markAsRead(entry.book)" />
+        <ReadingListEntryNormal :entry="entry" @read="markAsRead(entry.book)" />
       </div>
     </div>
 
-    <div class="columns"  v-if="editMode">
+    <div v-if="editMode && loading && booksLeftToAdd > 0" class="box">
+      <h2 class="subtitle">Importing Books</h2>
+      <Progress :value="(1 - (booksLeftToAdd / booksTotalToAdd)) * 100">
+        {{ booksLeftToAdd }} / {{ booksTotalToAdd }} books imported
+      </Progress>
+    </div>
+
+    <div class="columns" v-if="editMode">
       <div class="column reading-list-editable-entries">
         <div v-if="readingList.series.length" class="card" style="margin-bottom: 24px;">
           <div class="card-header">
             <div class="card-header-title">Auto-fill Series</div>
           </div>
-          <div class="card-content is-flex" v-for="series in readingList.series" :key="series.id" style="justify-content: space-between; padding: .6rem 1.5rem;">
-            <span style="line-height: 36px;">{{series.title}}</span>
+          <div class="card-content is-flex" v-for="series in readingList.series" :key="series.id"
+               style="justify-content: space-between; padding: .6rem 1.5rem;">
+            <span style="line-height: 36px;">{{ series.title }}</span>
             <button class="button is-pulled-right" @click="removeSeries(series)">
               <b-icon icon="delete" />
               <span>Remove</span>
@@ -59,21 +73,22 @@
 
         <div class="card">
           <div class="card-header">
-            <div class="card-header-title">In the list ({{readingList.entries.length}} books)</div>
+            <div class="card-header-title">In the list ({{ readingList.entries.length }} books)</div>
           </div>
           <div class="card-content" v-if="readingList.entries.length">
             <Progress :value="progress">
-              {{readEntries}} / {{readingList.entries.length}} read
+              {{ readEntries }} / {{ readingList.entries.length }} read
             </Progress>
           </div>
           <div class="card-content">
             <ReadingListEditableEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
-                              :enable-read-before="enableReadBefore"
-                              :edit-mode="editMode"
-                              :can-go-up="entry.position>1" :can-go-down="entry.position<readingList.entries.length"
-                              @read="markAsRead(entry.book)" @read-before="markAsReadBefore(entry.book)"
-                              @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)"
-                              @move="move(entry, $event)" />
+                                      :enable-read-before="enableReadBefore"
+                                      :edit-mode="editMode"
+                                      :can-go-up="entry.position>1"
+                                      :can-go-down="entry.position<readingList.entries.length"
+                                      @read="markAsRead(entry.book)" @read-before="markAsReadBefore(entry.book)"
+                                      @move-up="moveUp(entry)" @move-down="moveDown(entry)" @remove="remove(entry)"
+                                      @move="move(entry, $event)" />
           </div>
         </div>
 
@@ -85,7 +100,8 @@
             <BookSelector :selected-books="selectedBookIds" @book-selected="bookSelected" />
           </b-tab-item>
           <b-tab-item label="Add Series">
-            <SeriesSelector :selected-series="selectedSeriesIds" @series-selected="addSeries" />
+            <SeriesSelector :selected-series="selectedSeriesIds" @series-selected="addSeries"
+                            @series-subscribed="subscribeSeries" />
           </b-tab-item>
         </b-tabs>
 
@@ -107,13 +123,17 @@ export default {
   name: "readingListDetails",
   components: {
     ReadingListEditableEntry,
-    Progress, SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal},
+    Progress, SeriesSelector, ReadingListEntry, BookSelector, ReadingListEntryNormal
+  },
   data() {
     return {
       readingListId: null,
       readingList: null,
       editMode: false,
       enableReadBefore: false,
+      loading: false,
+      booksLeftToAdd: 0,
+      booksTotalToAdd: 1
     };
   },
   computed: {
@@ -136,7 +156,7 @@ export default {
       return this.readingList?.entries?.find((e) => !e.book.last_read_history || !e.book.last_read_history.read_date);
     },
     seriesNames() {
-      return this.readingList?.series.map(s => s.title).join(', ');
+      return this.readingList?.series.map(s => s.title).join(", ");
     }
   },
   loading: true,
@@ -149,10 +169,10 @@ export default {
       });
     },
     getApiUrl() {
-      return '/reading-list/' + this.readingListId + '/';
+      return "/reading-list/" + this.readingListId + "/";
     },
     bookSelected(book) {
-      this.$axios.$post('/reading-list/' + this.readingListId + '/entries/', {
+      return this.$axios.$post("/reading-list/" + this.readingListId + "/entries/", {
         book: book.id
       }).then(() => {
         this.updateComponent(this.$route);
@@ -169,7 +189,7 @@ export default {
         return;
       }
 
-      this.$axios.$put('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/', {
+      this.$axios.$put("/reading-list/" + this.readingListId + "/entries/" + entry.id + "/", {
         position: parseInt(position, 10)
       }).then(() => this.updateComponent());
     },
@@ -178,34 +198,66 @@ export default {
     },
     markAsReadBefore(book) {
       // Just put them as read some time before the tool was developed
-      this.$api.bookRead(book, '2020-02-01T00:00:00Z').then(() => this.updateComponent());
+      this.$api.bookRead(book, "2020-02-01T00:00:00Z").then(() => this.updateComponent());
     },
     remove(entry) {
-      this.$axios.$delete('/reading-list/' + this.readingListId + '/entries/' + entry.id + '/')
+      this.$axios.$delete("/reading-list/" + this.readingListId + "/entries/" + entry.id + "/")
         .then(() => this.updateComponent());
     },
     archive() {
-      this.$axios.$patch('/reading-list/' + this.readingListId + '/', {
-        'archived': !this.readingList.archived,
+      this.$axios.$patch("/reading-list/" + this.readingListId + "/", {
+        "archived": !this.readingList.archived
       }).then(() => this.updateComponent());
     },
     addSeries(series) {
-      this.$axios.$post('/reading-list/' + this.readingListId + '/series/', {
-        series_id: series.id,
+      this.loading = true;
+      this.$axios.$get("/book/?limit=1000&series=" + series.id).then(({ count, results }) => {
+        this.booksLeftToAdd = count;
+        this.booksTotalToAdd = count;
+        const pushNextBook = () => {
+          const book = results.shift();
+          return this.$axios.$post("/reading-list/" + this.readingListId + "/entries/", {
+            book: book.id
+          });
+        };
+        // This function go through every books in the series and add them one by one to the list
+        const pushUntilDone = () => {
+          return pushNextBook()
+            .catch(() => true) // This catch the case when you have a book already in the list
+            .then(() => {
+              this.booksLeftToAdd = results.length;
+              if (results.length > 0) {
+                return pushUntilDone();
+              }
+            });
+        };
+        return pushUntilDone();
+
+      })
+        .catch(() => true) // Prevent locking in loading if there is any error
+        .then(() => {
+          this.loading = false;
+          this.booksLeftToAdd = 0;
+          this.updateComponent();
+        });
+    },
+    subscribeSeries(series) {
+      this.$axios.$post("/reading-list/" + this.readingListId + "/series/", {
+        series_id: series.id
       }).then(() => this.updateComponent());
     },
     removeSeries(series) {
-      this.$axios.$delete('/reading-list/' + this.readingListId + '/series/' + series.id + '/')
+      this.$axios.$delete("/reading-list/" + this.readingListId + "/series/" + series.id + "/")
         .then(() => this.updateComponent());
     },
-    updateList(){
-      this.$axios.$patch('/reading-list/'+this.readingListId+'/', {
-        'title': this.readingList.title,
+    updateList() {
+      this.$axios.$patch("/reading-list/" + this.readingListId + "/", {
+        "title": this.readingList.title
       }).then(() => this.updateComponent());
     }
   },
   beforeMount() {
     this.updateComponent(this.$route);
   }
-}
+};
 </script>
