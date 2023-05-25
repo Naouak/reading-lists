@@ -22,6 +22,7 @@ urlpatterns = [
     path('reading-statistics/', library.views.statistics.statistics),
     path('completion-statistics/', library.views.statistics.completion),
     path('completion-series/', library.views.statistics.completion_series),
+    path('monthly-completion/', library.views.statistics.monthly_completion),
     path('reading-history-summary/', library.views.books.read_history),
     path('book-link-graph/', library.views.books.book_links_graph),
     path('reading-report/', library.views.statistics.reading_report)

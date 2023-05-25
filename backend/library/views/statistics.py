@@ -99,6 +99,44 @@ def completion(request):
 
 
 @api_view(['GET'])
+def monthly_completion(request):
+    start = request.query_params.get('from', None)
+    end = request.query_params.get('to', None)
+
+    query_set = Book.objects
+    if start:
+        try:
+            query_set = query_set.filter(last_read_history__read_date__gt=parse_datetime(start))
+        except:
+            pass
+    if end:
+        try:
+            query_set = query_set.filter(last_read_history__read_date__lte=parse_datetime(end))
+        except:
+            pass
+
+    book_read = query_set \
+        .filter(last_read_history__isnull=False) \
+        .annotate(pub_year=ExtractYear('pub_date')) \
+        .values('pub_year') \
+        .annotate(read_year=ExtractYear('last_read_history__read_date'), read_month=ExtractMonth('last_read_history__read_date'), read=Count('last_read_history__id')) \
+        .order_by('read_year', 'read_month', 'pub_year') \
+        .all()
+
+    book_read_map = {}
+    for book_stat in book_read:
+        if book_stat['read_year'] is None:
+            continue
+        read_period = str(book_stat['read_year']) + "-" + ("00"+str(book_stat['read_month']))[-2:]
+        pub_year = str(book_stat['pub_year'])
+        if read_period not in book_read_map:
+            book_read_map[read_period] = {}
+        book_read_map[read_period][pub_year] = book_stat['read']
+
+    return Response(book_read_map)
+
+
+@api_view(['GET'])
 def completion_series(request):
     start = request.query_params.get('from', None)
     end = request.query_params.get('to', None)
