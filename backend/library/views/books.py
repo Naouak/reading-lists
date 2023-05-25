@@ -152,12 +152,12 @@ class ReadingListEntryViewSet(viewsets.ViewSet):
         position = request.data['position'] if 'position' in request.data else None
 
         if book is None:
-            raise bad_request(request, Exception())
+            return bad_request(request, Exception())
 
         queryset = ReadingListEntry.objects.filter(reading_list_id=reading_list_pk)
 
         if len(queryset.filter(book_id=book)):
-            raise bad_request(request, Exception())
+            return bad_request(request, Exception())
 
         if position is None:
             position = (queryset.aggregate(Max('position'))['position__max'] or 0) + 1
