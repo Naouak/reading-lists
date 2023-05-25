@@ -3,9 +3,10 @@ backports.zoneinfo==0.2.1
 certifi==2020.4.5.1
 cffi==1.15.1
 chardet==3.0.4
+charset-normalizer==3.1.0
 cryptography==38.0.4
 Deprecated==1.2.13
-Django==4.1.4
+Django==4.1.9
 django-cors-headers==3.13.0
 django-filter==22.1
 django-oauth-toolkit==2.2.0
@@ -19,12 +20,12 @@ marshmallow==3.19.0
 marvelous==1.4.3
 mysqlclient==2.1.1
 oauthlib==3.1.0
+packaging==23.1
 pycparser==2.21
 pymemcache==4.0.0
 python-dotenv==0.13.0
 pytz==2020.1
 requests==2.31.0
-setuptools==56.0.0
 shortuuid==1.0.1
 six==1.14.0
 sqlparse==0.3.1
