@@ -27,11 +27,11 @@ I'm currently using it on my own and it's working fine but I can't ensure anythi
 cd backend/
 pip -r requirements.txt install
 cp .env.sample .env
+# edit .env with your values
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py setup
 
-# edit .env with your values
 cd ../frontend/
 npm ci
 cp .env.sample .env
