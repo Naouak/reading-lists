@@ -1,7 +1,9 @@
 import json
+import re
 import time
 import datetime
 
+import requests
 from django.core.management import BaseCommand
 from marvelous.exceptions import ApiError
 
@@ -18,7 +20,7 @@ class Command(BaseCommand):
         self.api_client = get_client()
 
     def add_arguments(self, parser):
-        parser.add_argument('type', choices=['series', 'comics'], type=str)
+        parser.add_argument('type', choices=['series', 'comics', 'availability'], type=str)
         parser.add_argument('-p', '--max_pages', dest='max_pages', metavar='N', type=int,
                             help='Stop after checking N pages')
         parser.add_argument('-o', '--older_first', dest='older_first', action='store_true',
@@ -34,6 +36,8 @@ class Command(BaseCommand):
             self.doComics(max_pages, older_first)
         elif type == "series":
             self.doSeries()
+        elif type == "availability":
+            self.doCheckAvailability()
 
     def import_series(self, series_list):
         for series in series_list:
@@ -148,3 +152,26 @@ class Command(BaseCommand):
 
             offset += 100
         pass
+
+    def doCheckAvailability(self):
+        books = Book.objects.filter(available_online=False).order_by('-modified_date')
+
+        for book in books:
+            print('Check Availability for '+book.title)
+            self.checkAvailability(book)
+            time.sleep(1)
+
+    def checkAvailability(self, book: Book):
+        digitalId = re.search(r'/(\d+)$', book.read_online_url).group(1)
+        print('DigitalID: ' + digitalId)
+        if not digitalId or int(digitalId) <= 0:
+            return
+
+        bifrost_data = requests.get('https://bifrost.marvel.com/v1/catalog/digital-comics/metadata/'+digitalId).json()
+        if bifrost_data['code'] != 200:
+            print(book.title + ' is not available')
+            return
+
+        book.available_online = not not bifrost_data['data']['results'][0]['issue_meta']['in_mu']
+        book.save()
+        print(book.title+' available!')
