@@ -1,10 +1,13 @@
-import json
 import re
 import time
 import datetime
 
 import requests
 from django.core.management import BaseCommand
+from django.db.models import Q
+from django.utils.datetime_safe import datetime as dj_datetime
+from django.db.models.functions import Now
+from django.utils import timezone
 from marvelous.exceptions import ApiError
 
 from library.models import BookSeries, Book
@@ -33,11 +36,11 @@ class Command(BaseCommand):
         older_first = options['older_first']
 
         if type == "comics":
-            self.doComics(max_pages, older_first)
+            self.do_comics(max_pages, older_first)
         elif type == "series":
-            self.doSeries()
+            self.do_series()
         elif type == "availability":
-            self.doCheckAvailability()
+            self.do_check_availability()
 
     def import_series(self, series_list):
         for series in series_list:
@@ -89,7 +92,7 @@ class Command(BaseCommand):
                     object.series = series
             object.save()
 
-    def doComics(self, max_pages=None, older_first=False):
+    def do_comics(self, max_pages=None, older_first=False):
         offset = 0
         limit = 100
         done = False
@@ -134,7 +137,7 @@ class Command(BaseCommand):
             time.sleep(1)
         pass
 
-    def doSeries(self):
+    def do_series(self):
         offset = 0
         limit = 100
         while True:
@@ -153,25 +156,35 @@ class Command(BaseCommand):
             offset += 100
         pass
 
-    def doCheckAvailability(self):
-        books = Book.objects.filter(available_online=False).order_by('-modified_date')
+    def do_check_availability(self):
+        current_date = timezone.make_aware(dj_datetime.today())
+
+        last_week = current_date - datetime.timedelta(days=7)
+
+        books = Book.objects\
+            .filter(available_online=False)\
+            .filter(Q(availability_last_check__lt=last_week) | Q(availability_last_check=None))\
+            .order_by('-modified_date')
 
         for book in books:
-            print('Check Availability for '+book.title)
-            self.checkAvailability(book)
+            print('Check Availability for ' + book.title)
+            self.check_availability(book)
             time.sleep(1)
 
-    def checkAvailability(self, book: Book):
-        digitalId = re.search(r'/(\d+)$', book.read_online_url).group(1)
-        print('DigitalID: ' + digitalId)
-        if not digitalId or int(digitalId) <= 0:
+    @staticmethod
+    def check_availability(book: Book):
+        digital_id = re.search(r'/(\d+)$', book.read_online_url).group(1)
+        print('DigitalID: ' + digital_id)
+        if not digital_id or int(digital_id) <= 0:
             return
 
-        bifrost_data = requests.get('https://bifrost.marvel.com/v1/catalog/digital-comics/metadata/'+digitalId).json()
-        if bifrost_data['code'] != 200:
-            print(book.title + ' is not available')
-            return
-
-        book.available_online = not not bifrost_data['data']['results'][0]['issue_meta']['in_mu']
+        bifrost_data = requests.get(
+            'https://bifrost.marvel.com/v1/catalog/digital-comics/metadata/' + digital_id).json()
+        if bifrost_data['code'] == 200:
+            book.available_online = not not bifrost_data['data']['results'][0]['issue_meta']['in_mu']
+        book.availability_last_check = Now()
         book.save()
-        print(book.title+' available!')
+        if book.available_online:
+            print(book.title + ' is available!')
+        else:
+            print(book.title + ' is not available.')

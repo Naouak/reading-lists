@@ -42,6 +42,7 @@ class Book(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     available_online = models.BooleanField(default=False)
+    availability_last_check = models.DateTimeField(null=True, default=None)
 
     def __str__(self):
         return self.title
