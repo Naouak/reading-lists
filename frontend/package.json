@@ -25,7 +25,7 @@
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "express-http-proxy": "^1.6.0",
-    "nuxt": "^2.15.8",
+    "nuxt": "^3.0.0",
     "nuxt-buefy": "^0.4.24",
     "vue-chartjs": "^3.5.0"
   },
