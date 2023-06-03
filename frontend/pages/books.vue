@@ -17,6 +17,21 @@
           </div>
         </div>
       </div>
+      <div class="card-content">
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field">
+              <p class="control has-icons-left">
+                <select v-model="available_online">
+                  <option :value="null">All</option>
+                  <option :value="1">Only Available</option>
+                  <option :value="0">Only non Available</option>
+                </select>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <section v-if="books && books.length" class="books-books section card-content">
         <Book class="books-book" v-for="book in books" :key="book.id" :book="book" />
@@ -57,6 +72,7 @@ export default {
     return {
       page: null,
       search: '',
+      available_online: null,
       books: [],
       hasNextPage: false,
       hasPreviousPage: false,
@@ -102,6 +118,9 @@ export default {
         name: 'books',
         query,
       });
+    },
+    available_online(){
+      this.updateComponent(this.$route);
     }
   },
   methods: {
@@ -125,6 +144,9 @@ export default {
       }
       if (this.search && this.search.trim().length > 0) {
         params.push("search=" + encodeURIComponent(this.search));
+      }
+      if (this.available_online !== null ) {
+        params.push("available_online="+ (this.available_online?"1":"0"));
       }
       return '/book/?' + params.join('&');
     }

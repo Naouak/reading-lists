@@ -50,6 +50,7 @@ class BookViewSet(viewsets.ModelViewSet):
         exclude_term = self.request.query_params.get('exclude_term', None)
         only_available = self.request.query_params.get('only_available', None)
         only_published = self.request.query_params.get('only_published', None)
+        available_online = self.request.query_params.get('available_online', None)
 
         external_source = self.request.query_params.get('external_source', None)
         external_id = self.request.query_params.get('external_id', None)
@@ -74,6 +75,9 @@ class BookViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(availability_date__lte=date.today())
         if only_published is not None:
             queryset = queryset.filter(pub_date__lte=date.today())
+
+        if available_online is not None:
+            queryset = queryset.filter(available_online=available_online)
 
         return queryset
 
