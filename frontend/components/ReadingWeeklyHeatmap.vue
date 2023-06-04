@@ -43,6 +43,7 @@
                :width="100/24+'%'"
           >
             <circle
+              v-if="read_per_hour>0"
               :r="(50*read_per_hour/max_weekly_heatmap)+'%'"
               cx="50%"
               cy="50%"
@@ -81,10 +82,11 @@ export default {
         }
         acc[day][hour] = (acc[day][hour] || 0) + 1;
         return acc;
-      }, []);
+      }, Array(7).fill(null).map(_ => Array(24).fill(0)));
     },
     max_weekly_heatmap() {
-      return Math.max(...this.weekly_heatmap.map((perHours) => Math.max(...perHours)));
+      console.log(this.weekly_heatmap)
+      return Math.max(1,...this.weekly_heatmap.map((perHours) => Math.max(...perHours)));
     }
   }
 };
