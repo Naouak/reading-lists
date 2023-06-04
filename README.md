@@ -82,3 +82,9 @@ I set up a cron to checkout new issues from marvel-api like this:
 ```bash
 python manage.py checkout_marvel comics
 ```
+
+I also set up a second cron to check for issue availability online:
+
+```bash
+python manape.py checkout_marvel availability
+```

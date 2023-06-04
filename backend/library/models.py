@@ -4,7 +4,7 @@ from django.db import models
 
 # Create your models here.
 from django.db.models import Max
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.datetime_safe import datetime
@@ -50,10 +50,7 @@ class Book(models.Model):
 
 def readable_books_query_set():
     return Book.objects \
-        .exclude(type__exact="trade paperback") \
-        .exclude(type__exact='hardcover') \
-        .exclude(type__exact='digest') \
-        .exclude(pub_date__lt='1930-01-01T00:00:00Z') \
+        .filter(available_online=1) \
         .exclude(modified_date__lt=timezone.make_aware(datetime.today())-timedelta(days=61))
 
 class BookReadingHistory(models.Model):

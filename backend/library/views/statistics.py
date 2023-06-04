@@ -59,9 +59,7 @@ def completion(request):
     start = request.query_params.get('from', None)
     end = request.query_params.get('to', None)
 
-    book_count = Book.objects \
-        .exclude(title__icontains="trade paperback") \
-        .exclude(title__icontains='(Hardcover)') \
+    book_count = readable_books_query_set() \
         .annotate(year=ExtractYear('pub_date'), month=ExtractMonth('pub_date')) \
         .values('year', 'month') \
         .annotate(books=Count('id')) \
@@ -103,7 +101,7 @@ def monthly_completion(request):
     start = request.query_params.get('from', None)
     end = request.query_params.get('to', None)
 
-    query_set = Book.objects
+    query_set = readable_books_query_set()
     if start:
         try:
             query_set = query_set.filter(last_read_history__read_date__gt=parse_datetime(start))

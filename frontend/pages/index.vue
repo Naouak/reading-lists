@@ -35,9 +35,9 @@ export default {
     };
   },
   asyncData({$axios}) {
-    const recentPromise = $axios.$get('/book/?limit=50&exclude_term=Infinity Comic,Trade Paperback,(Hardcover)&ordering=-availability_date&only_available=1&only_published=1').then(r => r.results);
-    const newPromise = $axios.$get('/book/?limit=50&exclude_term=Infinity Comic,Trade Paperback,(Hardcover)&ordering=-pub_date,title&only_available=1&only_published=1').then(r => r.results);
-    const infinityComicsPromise = $axios.$get('/book/?limit=50&search=Infinity Comic&ordering=-availability_date,title').then(r => r.results)
+    const recentPromise = $axios.$get('/book/?limit=50&exclude_term=Infinity Comic&available_online=1&ordering=-availability_date').then(r => r.results);
+    const newPromise = $axios.$get('/book/?limit=50&exclude_term=Infinity Comic&available_online=1&ordering=-pub_date,title').then(r => r.results);
+    const infinityComicsPromise = $axios.$get('/book/?limit=50&search=Infinity Comic&available_online=1&ordering=-availability_date,title').then(r => r.results)
 
     return Promise.all([recentPromise, newPromise, infinityComicsPromise]).then(([recentBooks, newBooks, infinityComics]) => ({recentBooks, newBooks, infinityComics}));
   }
