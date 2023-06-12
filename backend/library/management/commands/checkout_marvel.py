@@ -158,16 +158,19 @@ class Command(BaseCommand):
 
     def do_check_availability(self):
         current_date = timezone.make_aware(dj_datetime.today())
-
+        yesterday = current_date - datetime.timedelta(days=1)
         last_week = current_date - datetime.timedelta(days=7)
 
         books = Book.objects\
             .filter(available_online=False)\
-            .filter(Q(availability_last_check__lt=last_week) | Q(availability_last_check=None))\
-            .order_by('-modified_date')
+            .filter(Q(availability_last_check__lt=last_week, pub_date__year__lt=current_date.year) | Q(availability_last_check__lt=yesterday, pub_date__year=current_date.year) | Q(availability_last_check=None))\
+            .order_by('-pub_date', '-modified_date')
 
+        total_to_check = books.count()
+        checked = 0
         for book in books:
-            print('Check Availability for ' + book.title)
+            checked = checked + 1
+            print('%d/%d Check Availability for %s' % (checked, total_to_check, book.title))
             self.check_availability(book)
             time.sleep(1)
 
