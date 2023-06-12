@@ -26,6 +26,24 @@
     </div>
 
     <div class="box">
+      <h2 class="subtitle">Available catalog progress</h2>
+
+      <div class="columns" style="text-align: center">
+        <div class="column">
+          <div class="subtitle">Added and available last week</div>
+          <div class="title">{{stats.available_last_week}} ({{available_last_week_progress}})</div>
+        </div>
+        <div class="column">
+          <div class="subtitle">Added and available last month</div>
+          <div class="title">{{stats.available_last_month}} ({{available_last_month_progress}})</div>
+        </div>
+        <div class="column">
+          <div class="subtitle">Added and available last year</div>
+          <div class="title">{{stats.available_last_year}} ({{available_last_year_progress}})</div>
+        </div>
+      </div>
+    </div>
+    <div class="box">
       <h2 class="subtitle">Catalog progress</h2>
 
       <div class="columns" style="text-align: center">
@@ -105,6 +123,27 @@ export default {
     },
     added_last_year_progress() {
       let progress = (this.stats.added_last_year / (this.stats.added_previous_year || this.stats.added_last_year || 1) * 100 - 100) | 0;
+      if (progress >= 0) {
+        progress = "+" + progress;
+      }
+      return progress + "%";
+    },
+    available_last_week_progress() {
+      let progress = (this.stats.available_last_week / (this.stats.available_previous_week || this.stats.available_last_week || 1) * 100 - 100) | 0;
+      if (progress >= 0) {
+        progress = "+" + progress;
+      }
+      return progress + "%";
+    },
+    available_last_month_progress() {
+      let progress = (this.stats.available_last_month / (this.stats.available_previous_month || this.stats.available_last_month || 1) * 100 - 100) | 0;
+      if (progress >= 0) {
+        progress = "+" + progress;
+      }
+      return progress + "%";
+    },
+    available_last_year_progress() {
+      let progress = (this.stats.available_last_year / (this.stats.available_previous_year || this.stats.available_last_year || 1) * 100 - 100) | 0;
       if (progress >= 0) {
         progress = "+" + progress;
       }

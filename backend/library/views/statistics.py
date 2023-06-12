@@ -41,14 +41,27 @@ def statistics(request):
     stats['read_previous_year'] = BookReadingHistory.objects.filter(read_date__gte=previous_year,
                                                                     read_date__lt=last_year).count()
 
-    stats['added_last_week'] = book_queryset.filter(availability_date__gte=last_week).count()
-    stats['added_previous_week'] = book_queryset.filter(availability_date__gte=previous_week,
+    stats['available_last_week'] = book_queryset.filter(availability_date__gte=last_week).count()
+    stats['available_previous_week'] = book_queryset.filter(availability_date__gte=previous_week,
                                                         availability_date__lt=last_week).count()
-    stats['added_last_month'] = book_queryset.filter(availability_date__gte=last_month).count()
-    stats['added_previous_month'] = book_queryset.filter(availability_date__gte=previous_month,
+    stats['available_last_month'] = book_queryset.filter(availability_date__gte=last_month).count()
+    stats['available_previous_month'] = book_queryset.filter(availability_date__gte=previous_month,
                                                          availability_date__lt=last_month).count()
-    stats['added_last_year'] = book_queryset.filter(availability_date__gte=last_year).count()
-    stats['added_previous_year'] = book_queryset.filter(availability_date__gte=previous_year,
+    stats['available_last_year'] = book_queryset.filter(availability_date__gte=last_year).count()
+    stats['available_previous_year'] = book_queryset.filter(availability_date__gte=previous_year,
+                                                        availability_date__lt=last_year).count()
+
+    all_books = Book.objects \
+        .exclude(modified_date__lt=timezone.make_aware(datetime.today()) - timedelta(days=61))
+
+    stats['added_last_week'] = all_books.filter(availability_date__gte=last_week).count()
+    stats['added_previous_week'] = all_books.filter(availability_date__gte=previous_week,
+                                                        availability_date__lt=last_week).count()
+    stats['added_last_month'] = all_books.filter(availability_date__gte=last_month).count()
+    stats['added_previous_month'] = all_books.filter(availability_date__gte=previous_month,
+                                                         availability_date__lt=last_month).count()
+    stats['added_last_year'] = all_books.filter(availability_date__gte=last_year).count()
+    stats['added_previous_year'] = all_books.filter(availability_date__gte=previous_year,
                                                         availability_date__lt=last_year).count()
 
     return Response(stats)
