@@ -12,6 +12,11 @@
                 time: {
                     unit: 'day'
                 }
+            }],
+            yAxes: [{
+              ticks: {
+                suggestedMin: 0
+              }
             }]
         }
     }" />
@@ -27,6 +32,11 @@
                 time: {
                     unit: 'day'
                 }
+            }],
+            yAxes: [{
+              ticks: {
+                suggestedMin: 0
+              }
             }]
         }
     }" />
