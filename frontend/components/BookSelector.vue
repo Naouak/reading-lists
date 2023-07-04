@@ -17,6 +17,10 @@
         <input type="checkbox" v-model="hideSelectedItems">
         Hide selected items
       </label>
+      <label class="checkbox">
+        <input type="checkbox" v-model="available_only">
+        Show Only available online books
+      </label>
     </div>
     <div class="card-content">
       <nav class="pagination is-centered">
@@ -38,8 +42,11 @@
           </div>
           <div class="media-content">
             <div class="content">
-              <div class="subtitle">{{book.title}}</div>
-              <div>Published on
+              <div class="subtitle">
+                <b-icon v-if="!book.available_online" icon="cancel" />
+                {{book.title}}</div>
+              <div>
+                Published on
                 <DateDisplay :date="book.pub_date" />
               </div>
             </div>
@@ -53,7 +60,7 @@
               </p>
               <p class="control">
                 <a :href="book.read_online_url" target="_blank" class="button">
-                  <b-icon icon="book-open-page-variant" />
+                  <b-icon :icon="book.available_online?'book-open-page-variant':'cancel'" />
                   <span>Read online</span></a>
               </p>
             </div>
@@ -88,6 +95,7 @@ export default {
       isScheduledForUpdate: false,
       hideSelectedItems: false,
       cancelToken: null,
+      available_only: false,
     };
   },
   computed: {
@@ -115,6 +123,9 @@ export default {
     page() {
       this.scheduleUpdate();
     },
+    available_only() {
+      this.scheduleUpdate();
+    }
   },
   methods: {
     scheduleUpdate() {
@@ -146,6 +157,9 @@ export default {
       const params = [];
       if (this.page > 1) {
         params.push("page=" + this.page);
+      }
+      if (this.available_only) {
+        params.push("available_online=1")
       }
       if (this.search && this.search.trim().length > 0) {
         params.push("search=" + encodeURIComponent(this.search));
