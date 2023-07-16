@@ -3,6 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
+
 def update_history(apps, schema_editor):
     BookReadingHistory = apps.get_model('library', 'BookReadingHistory')
     ReadingHistory = apps.get_model('library', 'ReadingHistory')
@@ -11,8 +12,12 @@ def update_history(apps, schema_editor):
     for book in books:
         BookReadingHistory(book_id=book).save()
 
-class Migration(migrations.Migration):
 
+def remove_history(apps, schema_editor):
+    pass
+
+
+class Migration(migrations.Migration):
     dependencies = [
         ('library', '0007_auto_20200516_1719'),
     ]
@@ -23,8 +28,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('read_date', models.DateTimeField(blank=True, null=True)),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='last_read_history', to='library.Book')),
+                ('book',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='last_read_history',
+                                   to='library.Book')),
             ],
         ),
-        migrations.RunPython(update_history),
+        migrations.RunPython(update_history, reverse_code=remove_history),
     ]
