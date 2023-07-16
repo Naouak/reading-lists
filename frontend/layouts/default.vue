@@ -50,6 +50,11 @@ export default {
           to: {name: 'reading-list'},
         },
         {
+          title: 'What\'s Next?',
+          icon: 'comment-arrow-right-outline',
+          to: {name: 'whats-next'},
+        },
+        {
           title: 'History',
           icon: 'history',
           to: {name: 'history'}
