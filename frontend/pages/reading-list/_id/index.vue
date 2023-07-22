@@ -10,6 +10,7 @@
           <button v-else @click="editMode=!editMode" class="button is-primary">End Edit</button>
           <button v-if="readingList.archived" class="button is-danger" @click="archive">Unarchive</button>
           <button v-else class="button is-danger" @click="archive">Archive</button>
+          <button v-if="editMode" class="button is-danger" @click="deleteList()">Delete list</button>
           <button v-if="!enableReadBefore" class="button is-primary" @click="enableReadBefore=!enableReadBefore">Enable
             Read Before
           </button>
@@ -267,6 +268,16 @@ export default {
       this.$axios.$patch("/reading-list/" + this.readingListId + "/", {
         "title": this.readingList.title
       }).then(() => this.updateComponent());
+    },
+    deleteList() {
+      if(!confirm(`Are you sure you want to delete the list "${this.readingList.title}"?`)){
+        return;
+      }
+
+      this.$axios.$delete("/reading-list/" + this.readingListId + "/")
+        .then(() => {
+          this.$router.push('/reading-list/');
+        });
     }
   },
   beforeMount() {
