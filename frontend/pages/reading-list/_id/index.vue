@@ -74,6 +74,11 @@
         <div class="card">
           <div class="card-header">
             <div class="card-header-title">In the list ({{ readingList.entries.length }} books)</div>
+
+            <button class="button" @click="reverseEntriesOrder = !reverseEntriesOrder">
+              <b-icon :icon="reverseEntriesOrder?'sort-descending':'sort-ascending'" />
+            </button>
+
           </div>
           <div class="card-content" v-if="readingList.entries.length">
             <Progress :value="progress">
@@ -81,7 +86,7 @@
             </Progress>
           </div>
           <div class="card-content">
-            <ReadingListEditableEntry v-for="entry in readingList.entries" :key="entry.id" :entry="entry"
+            <ReadingListEditableEntry v-for="entry in entries" :key="entry.id" :entry="entry"
                                       :enable-read-before="enableReadBefore"
                                       :edit-mode="editMode"
                                       :can-go-up="entry.position>1"
@@ -133,7 +138,8 @@ export default {
       enableReadBefore: false,
       loading: false,
       booksLeftToAdd: 0,
-      booksTotalToAdd: 1
+      booksTotalToAdd: 1,
+      reverseEntriesOrder: false,
     };
   },
   computed: {
@@ -157,6 +163,13 @@ export default {
     },
     seriesNames() {
       return this.readingList?.series.map(s => s.title).join(", ");
+    },
+    entries() {
+      const entries = [...this.readingList.entries];
+      if(this.reverseEntriesOrder){
+        entries.reverse();
+      }
+      return entries;
     }
   },
   loading: true,
