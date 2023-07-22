@@ -5,7 +5,7 @@
         <div class="field-body">
           <div class="field">
             <p class="control has-icons-left">
-              <input v-model="search" type="text" class="input" placeholder="Filter" />
+              <input v-model="search" type="text" class="input" placeholder="Filter" v-on:keyup.enter="selectFirst" />
               <span class="icon is-left">
                 <b-icon icon="magnify" />
               </span>
@@ -27,7 +27,7 @@
         <a class="pagination-previous" :disabled="!hasPreviousPage" @click="hasPreviousPage && (page=page-1)">Previous
           Page</a>
         <div class="pagination-list">
-          <span class="pagination-link is-current">{{page}}</span>
+          <span class="pagination-link is-current">{{ page }}</span>
         </div>
         <a class="pagination-next" :disabled="!hasNextPage" @click="hasNextPage && (page=page+1)">Next Page</a>
       </nav>
@@ -44,7 +44,8 @@
             <div class="content">
               <div class="subtitle">
                 <b-icon v-if="!book.available_online" icon="cancel" />
-                {{book.title}}</div>
+                {{ book.title }}
+              </div>
               <div>
                 Published on
                 <DateDisplay :date="book.pub_date" />
@@ -76,26 +77,26 @@ import DateDisplay from "~/components/DateDisplay";
 
 export default {
   name: "BookSelector",
-  components: {DateDisplay},
+  components: { DateDisplay },
   /**
    * @returns {{books: Book[]}}
    */
   props: {
     selectedBooks: {
-      default: [],
-    },
+      default: []
+    }
   },
   data() {
     return {
       page: 1,
-      search: '',
+      search: "",
       books: [],
       hasNextPage: false,
       hasPreviousPage: false,
       isScheduledForUpdate: false,
       hideSelectedItems: false,
       cancelToken: null,
-      available_only: false,
+      available_only: false
     };
   },
   computed: {
@@ -128,6 +129,25 @@ export default {
     }
   },
   methods: {
+    selectFirst() {
+      if (this.cancelToken) {
+        // Still loading some results
+        return;
+      }
+      if (this.availableBooks.length === 0) {
+        // Nothing to select
+        return;
+      }
+
+      const book = this.availableBooks[0];
+
+      if(this.selectedBooks.includes(book.id)){
+        // Already in the list
+        return;
+      }
+
+      this.selectBook(this.availableBooks[0]);
+    },
     scheduleUpdate() {
       if (this.isScheduledForUpdate) {
         return;
@@ -144,7 +164,9 @@ export default {
       this.$axios.$get(
         this.getApiUrl(),
         {
-          cancelToken: new this.$axios.CancelToken(c => { this.cancelToken = c })
+          cancelToken: new this.$axios.CancelToken(c => {
+            this.cancelToken = c;
+          })
         }
       ).then(response => {
         this.hasNextPage = !!response.next;
@@ -159,20 +181,20 @@ export default {
         params.push("page=" + this.page);
       }
       if (this.available_only) {
-        params.push("available_online=1")
+        params.push("available_online=1");
       }
       if (this.search && this.search.trim().length > 0) {
         params.push("search=" + encodeURIComponent(this.search));
       }
-      return '/book/?' + params.join('&');
+      return "/book/?" + params.join("&");
     },
     selectBook(book) {
-      this.$emit('book-selected', book);
+      this.$emit("book-selected", book);
     }
   },
 
   beforeMount() {
     this.updateComponent();
-  },
-}
+  }
+};
 </script>
