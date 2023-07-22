@@ -59,14 +59,14 @@ export default {
         // Make a reference of each objects
         const originalReadingLists = JSON.parse(JSON.stringify(response.results));
 
-        this.booksToRead = [];
+        const booksToRead = [];
 
         while (true) {
           // Fetch the next book in each list sorted by date
           const nextBooks = readingLists
             // Take the next entry of each reading list
             .map(list => {
-              return list.entries.length > 0 ? { reading_list: list, ...list.entries[0] } : null;
+              return list.entries.length > 0 ? list.entries[0] : null;
             })
             // Remove empty reading list entries
             .filter(a => a)
@@ -90,7 +90,9 @@ export default {
           let nextBook = nextBooks.find(entry => {
             // Check if book is not in another reading list
             // If it's the first entry of a list, we don't care about it. (as it is also a candidate for next book)
-            return !readingLists.find(r => r.entries.map(e => e.book.id).indexOf(entry.book.id) > 0);
+            return !readingLists.find(
+              r => r.entries.map(e => e.book.id).indexOf(entry.book.id) > 0
+            );
           });
 
           if (!nextBook) {
@@ -111,8 +113,10 @@ export default {
             }
           });
 
-          this.booksToRead.push(nextBook);
+          booksToRead.push(nextBook);
         }
+
+        this.booksToRead = booksToRead;
       });
     },
     getApiUrl(route = this.$route) {
