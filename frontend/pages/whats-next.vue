@@ -7,9 +7,7 @@
     <div class="reading-lists columns is-multiline">
       <div v-for="(entry) in booksToReadToDisplay" :key="entry.book.id" class="column">
         <div class="reading-list">
-          <h2 class="reading-list-title">{{entry.lists[0].title}}
-            <span v-if="entry.lists.length > 1">(+{{entry.lists.length}} other lists)</span>
-          </h2>
+          <h2 class="reading-list-title">{{entry.lists.map(l => l.title).sort().join(', ')}}</h2>
           <ReadingListEntryNormal :entry="entry" @read="markAsRead(entry.book)" />
         </div>
       </div>
