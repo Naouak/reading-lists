@@ -4,13 +4,38 @@
       <h1 class="title">What's next?</h1>
     </div>
 
-    <div class="reading-lists columns is-multiline">
+    <div class="box">
+      <label>
+      <input type="checkbox" v-model="fullView"> FULL VIEW
+      </label>
+    </div>
+
+    <div class="reading-lists columns is-multiline" v-if="!fullView">
       <div v-for="(entry) in booksToReadToDisplay" :key="entry.book.id" class="column">
         <div class="reading-list">
           <h2 class="reading-list-title">{{entry.lists.map(l => l.title).sort().join(', ')}}</h2>
           <ReadingListEntryNormal :entry="entry" @read="markAsRead(entry.book)" />
         </div>
       </div>
+    </div>
+    <div class="list-block" v-else>
+      <table class="whats-next-full-list">
+        <tr>
+          <th>Title</th>
+          <th>Read?</th>
+          <th>Publication Date</th>
+          <th>Reading Lists</th>
+        </tr>
+        <tr v-for="(entry) in booksToRead" :key="entry.book.id" :class="{
+          read: !!entry.book.last_read_history
+        }">
+          <td>{{entry.book.title}}</td>
+          <td>{{entry.book.last_read_history?"Read":""}}</td>
+          <td>{{entry.book.pub_date}}</td>
+          <td>{{entry.lists.map(l => l.title).sort().join(', ')}}</td>
+        </tr>
+      </table>
+
     </div>
   </div>
 </template>
@@ -27,7 +52,8 @@ export default {
   data() {
     return {
       booksToRead: [],
-      filterRead: true
+      filterRead: true,
+      fullView: false,
     };
   },
   computed: {
