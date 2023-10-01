@@ -37,6 +37,19 @@
   }
 }
 
+.reading-list-end{
+  @extend .reading-list;
+
+  .reading-list-end-cover{
+    background: #a17577;
+    text-align: center;
+    padding: 100px 5px;
+    color: black;
+    font-weight: bold;
+  }
+
+}
+
 .cover {
   position: relative;
   width: 100%;
