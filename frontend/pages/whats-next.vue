@@ -154,7 +154,7 @@ export default {
           nextBook.lists = [];
 
           // Clean the selected books from all readinglists
-          readingLists.forEach((r, i) => {
+          readingLists.forEach(r => {
             const entries = r.entries.map(e => e.book.id);
             const index = entries.indexOf(nextBook.book.id);
             if (index >= 0) {
