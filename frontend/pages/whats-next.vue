@@ -159,7 +159,7 @@ export default {
             const index = entries.indexOf(nextBook.book.id);
             if (index >= 0) {
               r.entries.splice(index, 1);
-              nextBook.lists.push(originalReadingLists[i]);
+              nextBook.lists.push(originalReadingLists.find(or => or.id === r.id ));
             }
           });
 
