@@ -10,6 +10,8 @@
       </label>
     </div>
 
+    <BlockedBooks  v-if="blockedBooks" :blocked-books="blockedBooks" />
+
     <div class="reading-lists columns is-multiline" v-if="!fullView">
       <div v-for="(entry) in booksToReadToDisplay" :key="entry.id" class="column">
         <div class="reading-list" v-if="entry.type !== 'empty_list' ">
@@ -66,10 +68,12 @@
 <script>
 
 import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
+import BlockedBooks from "~/components/BlockedBooks";
 
 export default {
   name: "reading-list",
   components: {
+    BlockedBooks,
     ReadingListEntryNormal
   },
   data() {
@@ -77,6 +81,7 @@ export default {
       booksToRead: [],
       filterRead: true,
       fullView: false,
+      blockedBooks: null,
     };
   },
   computed: {
@@ -102,8 +107,22 @@ export default {
     this.updateComponent(this.$route);
   },
   methods: {
+    calculateDependencies(nextBooks, readingLists) {
+      const bookIds = nextBooks.map(b => b.book.id);
+      const booksToConsider = nextBooks.filter((book, index) => bookIds.indexOf(book.book.id) === index);
+      const dependencies = [];
+
+      booksToConsider.forEach((book) => {
+        const blockingLists = readingLists.filter(r => r.entries.map(e => e.book.id).indexOf(book.book.id) > 0);
+        if (blockingLists.length > 0) {
+          dependencies.push([book, blockingLists.map(l => [l, l.entries[0]])]);
+        }
+      });
+      return dependencies;
+    },
     updateComponent(route = this.$route) {
       this.readingLists = [];
+      this.blockedBooks = null;
       this.$axios.$get(this.getApiUrl(route)).then(response => {
         const readingLists = response.results;
         // Make a reference of each objects
@@ -147,6 +166,11 @@ export default {
 
           if (!nextBook) {
             // This is an edge case if there is two lists with circular dependency
+
+            // This block of code tries to give enough information to identify the cause of the circular dependency
+            if(!this.blockedBooks) {
+              this.blockedBooks = this.calculateDependencies(nextBooks, readingLists);
+            }
             // If no book was the first of every list, we just take the older one first
             nextBook = nextBooks[0];
           }
