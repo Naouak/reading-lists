@@ -57,9 +57,11 @@ class Command(BaseCommand):
     def import_comics(self, comics):
         for book in comics:
             if book.digital_id is None:
+                self.stdout.write(self.style.SUCCESS('No digital id for "%s"' % book.title))
                 continue
 
             if not book.dates.unlimited:
+                self.stdout.write(self.style.SUCCESS('No unlimited dates for "%s"' % book.title))
                 continue
 
             query_set = Book.objects.filter(external_id=book.id)
