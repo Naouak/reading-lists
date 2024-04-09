@@ -69,6 +69,7 @@
 
 import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
 import BlockedBooks from "~/components/BlockedBooks";
+import { sortReadingLists } from "~/utils/reading-list-sort";
 
 export default {
   name: "reading-list",
@@ -85,7 +86,7 @@ export default {
     };
   },
   computed: {
-    booksToReadWithoutLists(){
+    booksToReadWithoutLists() {
       return this.booksToRead.filter(b => b.book);
     },
     booksToReadToDisplay() {
@@ -107,104 +108,11 @@ export default {
     this.updateComponent(this.$route);
   },
   methods: {
-    calculateDependencies(nextBooks, readingLists) {
-      const bookIds = nextBooks.map(b => b.book.id);
-      const booksToConsider = nextBooks.filter((book, index) => bookIds.indexOf(book.book.id) === index);
-      const dependencies = [];
-
-      booksToConsider.forEach((book) => {
-        const blockingLists = readingLists.filter(r => r.entries.map(e => e.book.id).indexOf(book.book.id) > 0);
-        if (blockingLists.length > 0) {
-          dependencies.push([book, blockingLists.map(l => [l, l.entries[0]])]);
-        }
-      });
-      return dependencies;
-    },
     updateComponent(route = this.$route) {
       this.readingLists = [];
       this.blockedBooks = null;
       this.$axios.$get(this.getApiUrl(route)).then(response => {
-        const readingLists = response.results;
-        // Make a reference of each objects
-        const originalReadingLists = JSON.parse(JSON.stringify(response.results));
-
-        const booksToRead = [];
-
-        while (true) {
-          // Fetch the next book in each list sorted by date
-          const nextBooks = readingLists
-            // Take the next entry of each reading list
-            .map(list => {
-              return list.entries.length > 0 ? list.entries[0] : null;
-            })
-            // Remove empty reading list entries
-            .filter(a => a)
-            // Sort books by pub date
-            .sort((a, b) => {
-              if (!a.book.pub_time) {
-                a.book.pub_time = new Date(a.book.pub_date).getTime();
-              }
-              if (!b.book.pub_time) {
-                b.book.pub_time = new Date(b.book.pub_date).getTime();
-              }
-
-              return a.book.pub_time >= b.book.pub_time ? 1 : -1;
-            });
-
-          // No books left
-          if (nextBooks.length === 0) {
-            break;
-          }
-
-          let nextBook = nextBooks.find(entry => {
-            // Check if book is not in another reading list
-            // If it's the first entry of a list, we don't care about it. (as it is also a candidate for next book)
-            return !readingLists.find(
-              r => r.entries.map(e => e.book.id).indexOf(entry.book.id) > 0
-            );
-          });
-
-          if (!nextBook) {
-            // This is an edge case if there is two lists with circular dependency
-
-            // This block of code tries to give enough information to identify the cause of the circular dependency
-            if(!this.blockedBooks) {
-              this.blockedBooks = this.calculateDependencies(nextBooks, readingLists);
-            }
-            // If no book was the first of every list, we just take the older one first
-            nextBook = nextBooks[0];
-          }
-
-          nextBook.lists = [];
-
-          // Clean the selected books from all readinglists
-          readingLists.forEach(r => {
-            const entries = r.entries.map(e => e.book.id);
-            const index = entries.indexOf(nextBook.book.id);
-            if (index >= 0) {
-              r.entries.splice(index, 1);
-              nextBook.lists.push(originalReadingLists.find(or => or.id === r.id ));
-            }
-          });
-
-          booksToRead.push(nextBook);
-
-          const emptyReadingLists = readingLists.filter(list => {
-            return list.entries.length === 0;
-          });
-
-          emptyReadingLists.forEach(list => {
-            readingLists.splice(readingLists.indexOf(list), 1);
-
-            booksToRead.push({
-              id: "list"+list.id,
-              type: "empty_list",
-              list
-            });
-          })
-        }
-
-        this.booksToRead = booksToRead;
+        [this.booksToRead, this.blockedBooks] = sortReadingLists(response.results);
       });
     },
     getApiUrl(route = this.$route) {
