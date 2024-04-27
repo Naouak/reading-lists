@@ -33,19 +33,19 @@
         <div class="column">
           <div class="subtitle">Time to finish (based on last week)</div>
           <div class="title">
-            <TimeLeft :time_left="timeToRead(stats.read_last_week, 7, stats.total_books, stats.read_books, target_percentage / 100)" />
+            <TimeLeft :time_left="timeToReadEverything(stats.read_last_week,7,stats.read_books,stats.total_books,target_percentage / 100)" />
           </div>
         </div>
         <div class="column">
           <div class="subtitle">Time to finish (based on last month)</div>
           <div class="title">
-            <TimeLeft :time_left="timeToRead(stats.read_last_month, 30, stats.total_books, stats.read_books, target_percentage / 100)" />
+            <TimeLeft :time_left="timeToReadEverything(stats.read_last_month,30,stats.read_books,stats.total_books,target_percentage / 100)" />
           </div>
         </div>
         <div class="column">
           <div class="subtitle">Time to finish (based on last year)</div>
           <div class="title">
-            <TimeLeft :time_left="timeToRead(stats.read_last_year, 365, stats.total_books, stats.read_books, target_percentage / 100)" />
+            <TimeLeft :time_left="timeToReadEverything(stats.read_last_year,365,stats.read_books,stats.total_books,target_percentage / 100)" />
           </div>
         </div>
       </div>
@@ -78,21 +78,21 @@
           <div class="subtitle">Time to finish (based on last week)</div>
           <div class="title">
             <TimeLeft
-              :time_left="timeToReadEverything(stats.read_last_week, stats.available_last_week, 7, stats.total_books, stats.read_books, target_percentage / 100)" />
+              :time_left="timeToReadEverything(stats.read_last_week,7,stats.read_books,stats.total_books,target_percentage / 100,stats.available_last_week)" />
           </div>
         </div>
         <div class="column">
           <div class="subtitle">Time to finish (based on last month)</div>
           <div class="title">
             <TimeLeft
-              :time_left="timeToReadEverything(stats.read_last_month, stats.available_last_month, 30, stats.total_books, stats.read_books, target_percentage / 100)" />
+              :time_left="timeToReadEverything(stats.read_last_month,30,stats.read_books,stats.total_books,target_percentage / 100,stats.available_last_month)" />
           </div>
         </div>
         <div class="column">
           <div class="subtitle">Time to finish (based on last year)</div>
           <div class="title">
             <TimeLeft
-              :time_left="timeToReadEverything(stats.read_last_year, stats.available_last_year, 365, stats.total_books, stats.read_books, target_percentage / 100)" />
+              :time_left="timeToReadEverything(stats.read_last_year,365,stats.read_books,stats.total_books,target_percentage / 100,stats.available_last_year)" />
           </div>
         </div>
       </div>
@@ -216,28 +216,19 @@ export default {
     }
   },
   methods: {
-    timeToRead(read, delta, total, done, targetRatio) {
-      const target = total * targetRatio;
-      const left = target - done;
-      return left / read * delta;
-    },
-    timeToReadEverything(read, added, delta, total, done, targetRatio) {
-      // If we don't read fast enough to catch up
-      if (read < added * targetRatio) {
+    timeToReadEverything(read, duration, done, total, targetRatio, added = 0) {
+      // We're solving this equation (when the number read over time crosses the number added over time):
+      // read * x / duration + done = (added * x / duration + total) * targetRatio
+      // Which gives:
+      // x = duration * (total * targetRatio - done) / (read - added * targetRatio )
+
+      const daysLeft = Math.floor(duration * (total * targetRatio - done) / (read - added * targetRatio));
+
+      if(daysLeft < 0 && done < total*targetRatio){
         return 0;
       }
 
-      const target = total * targetRatio;
-      const left = target - done;
-      let daysToTarget = left / read * delta;
-
-      // We got to the target but the time it took to get there, the catalog increased too
-      if (daysToTarget > delta) {
-        const addedDuring = daysToTarget / delta * added;
-        daysToTarget += this.timeToReadEverything(read, added, delta, total + addedDuring, target, targetRatio);
-      }
-
-      return daysToTarget;
+      return daysLeft;
     }
   }
 
