@@ -28,15 +28,18 @@ class Command(BaseCommand):
                             help='Stop after checking N pages')
         parser.add_argument('-o', '--older_first', dest='older_first', action='store_true',
                             help='Start with older first (used to check that older issues are still in the catalog)')
-        parser.set_defaults(older_first=False)
+        parser.add_argument('-n', '--page_size', dest='limit',  metavar='N', type=int,
+                            help='Start with older first (used to check that older issues are still in the catalog)')
+        parser.set_defaults(older_first=False, limit=100)
 
     def handle(self, *args, **options):
         type = options['type']
         max_pages = options['max_pages']
         older_first = options['older_first']
+        limit = options['limit']
 
         if type == "comics":
-            self.do_comics(max_pages, older_first)
+            self.do_comics(max_pages, older_first, limit)
         elif type == "series":
             self.do_series()
         elif type == "availability":
@@ -94,9 +97,8 @@ class Command(BaseCommand):
                     object.series = series
             object.save()
 
-    def do_comics(self, max_pages=None, older_first=False):
+    def do_comics(self, max_pages=None, older_first=False, limit=100):
         offset = 0
-        limit = 100
         done = False
         total = None
         while not done:
@@ -135,7 +137,7 @@ class Command(BaseCommand):
                     time.sleep(1)
                     retry = retry - 1
 
-            offset += 100
+            offset += limit
             time.sleep(1)
         pass
 
