@@ -101,7 +101,7 @@ class Command(BaseCommand):
         offset = 0
         done = False
         total = None
-        while not done:
+        while not done and offset < 500000:
             print("Checking page %d " % offset)
             retry = 3
             while retry > 0:
