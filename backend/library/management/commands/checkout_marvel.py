@@ -22,6 +22,12 @@ class Command(BaseCommand):
         super().__init__()
         self.api_client = get_client()
 
+    def print(self, text):
+        self.stdout.write(str(datetime.datetime.now()) + " - " + self.style.SUCCESS(text))
+
+    def error(self, text):
+        self.stderr.write(str(datetime.datetime.now()) + " - " + str(text))
+
     def add_arguments(self, parser):
         parser.add_argument('type', choices=['series', 'comics', 'availability'], type=str)
         parser.add_argument('-p', '--max_pages', dest='max_pages', metavar='N', type=int,
@@ -102,7 +108,7 @@ class Command(BaseCommand):
         done = False
         total = None
         while not done and offset < 500000:
-            print("Checking page %d " % offset)
+            self.print("Checking page %d / %d " % (offset, total or 0))
             retry = 3
             while retry > 0:
                 try:
@@ -117,7 +123,7 @@ class Command(BaseCommand):
 
                     # Retry a page if it got empty results just to be sure
                     if len(comics) == 0:
-                        print("Empty results, let's try again")
+                        self.error("Empty results, let's try again")
                         retry = retry - 1
                         continue
 
@@ -127,13 +133,13 @@ class Command(BaseCommand):
                     if (total and offset + limit >= total) or max_pages and max_pages >= offset / limit:
                         done = True
                 except ApiError as error:
-                    print("Error with API:")
-                    print(error)
+                    self.error("Error with API:")
+                    self.error(error)
                     time.sleep(1)
                     retry = retry - 1
                 except Exception as error:
-                    print("General Error:")
-                    print(error)
+                    self.error("General Error:")
+                    self.error(error)
                     time.sleep(1)
                     retry = retry - 1
 
@@ -145,7 +151,7 @@ class Command(BaseCommand):
         offset = 0
         limit = 100
         while True:
-            print("Checking page %d " % offset)
+            self.print("Checking page %d " % offset)
             series = self.api_client.series_list({
                 'orderBy': 'modified',
                 'limit': limit,
@@ -174,14 +180,13 @@ class Command(BaseCommand):
         checked = 0
         for book in books:
             checked = checked + 1
-            print('%d/%d Check Availability for %s' % (checked, total_to_check, book.title))
+            self.print('%d/%d Check Availability for %s' % (checked, total_to_check, book.title))
             self.check_availability(book)
             time.sleep(1)
 
-    @staticmethod
-    def check_availability(book: Book):
+    def check_availability(self, book: Book):
         digital_id = re.search(r'/(\d+)$', book.read_online_url).group(1)
-        print('DigitalID: ' + digital_id)
+        self.print('DigitalID: ' + digital_id)
         if not digital_id or int(digital_id) <= 0:
             return
 
@@ -192,6 +197,6 @@ class Command(BaseCommand):
         book.availability_last_check = Now()
         book.save()
         if book.available_online:
-            print(book.title + ' is available!')
+            self.print(book.title + ' is available!')
         else:
-            print(book.title + ' is not available.')
+            self.print(book.title + ' is not available.')
