@@ -130,7 +130,7 @@ class Command(BaseCommand):
                     retry = 0
                     self.import_comics(comics)
 
-                    if (total and offset + limit >= total) or max_pages and max_pages >= offset / limit:
+                    if (total and offset + limit >= total) or (max_pages and max_pages <= offset / limit):
                         done = True
                 except ApiError as error:
                     self.error("Error with API:")
