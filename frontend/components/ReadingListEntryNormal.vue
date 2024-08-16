@@ -1,11 +1,16 @@
 <template>
-  <div class="reading-list-entry" :class="{'read': entry.book.last_read_history}">
+  <div class="reading-list-entry" :class="{'read': !want_to_read}">
     <div class="cover">
       <a target="_blank" :href="read_url">
         <img :src="entry.book.cover_url" :alt="entry.book.title">
 
         <div v-if="entry.position" class="reading-list-position">
-          <b-icon icon="check" class="has-text-success" v-if="entry.book.last_read_history" /> # {{entry.position}}
+          <b-icon icon="check"
+                  :class="{
+                     'has-text-success': !entry.book.last_read_history.want_to_reread,
+                     'has-text-warning': entry.book.last_read_history.want_to_reread
+                  }"
+                  v-if="entry.book.last_read_history" /> # {{entry.position}}
         </div>
 
         <div class="cover-title">
@@ -16,7 +21,7 @@
 
       <div class="mark-as-read">
           <span class="book-pub-date"><DateDisplay :date="entry.book.pub_date" /></span>
-          <button v-if="readable && (!entry.book.last_read_history || entry.book?.last_read_history?.want_to_reread)" class="mark-as-read-button button" @click="$emit('read')">
+          <button v-if="can_read" class="mark-as-read-button button" @click="$emit('read')">
             <b-icon icon="check" />
             <span>Mark as read</span>
           </button>
@@ -49,6 +54,12 @@ export default {
     }
   },
   computed: {
+    want_to_read() {
+      return !this.entry.book.last_read_history || this.entry.book?.last_read_history?.want_to_reread;
+    },
+    can_read() {
+      return this.readable && this.want_to_read
+    },
     read_url() {
       if (navigator.userAgent.match(/Android/i)){
         return `https://www.marvel.com/comics/issue/${this.entry.book.external_id}/comics-collection`;
