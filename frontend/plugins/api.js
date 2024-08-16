@@ -10,6 +10,10 @@ class Api {
     }
     return this.$axios.$post('/book/' + book.id + '/read/', data);
   }
+
+  bookWantToReread(book) {
+    return this.$axios.$post('/book/' + book.id + '/want_to_reread/');
+  }
 }
 
 export default function (context, inject) {

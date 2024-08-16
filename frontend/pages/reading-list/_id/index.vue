@@ -45,7 +45,7 @@
 
     <div class="reading-lists columns is-multiline" v-if="!editMode">
       <div v-for="entry in readingList.entries" :key="entry.id" class="column">
-        <ReadingListEntryNormal :entry="entry" @read="markAsRead(entry.book)" />
+        <ReadingListEntryNormal :entry="entry" @read="markAsRead(entry.book)" @want_to_reread="wantToReread(entry.book)" />
       </div>
     </div>
 
@@ -213,6 +213,9 @@ export default {
     markAsReadBefore(book) {
       // Just put them as read some time before the tool was developed
       this.$api.bookRead(book, "2020-02-01T00:00:00Z").then(() => this.updateComponent());
+    },
+    wantToReread(book){
+      this.$api.bookWantToReread(book).then(() => this.updateComponent());
     },
     remove(entry) {
       this.$axios.$delete("/reading-list/" + this.readingListId + "/entries/" + entry.id + "/")

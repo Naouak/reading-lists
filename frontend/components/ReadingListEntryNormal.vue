@@ -16,9 +16,13 @@
 
       <div class="mark-as-read">
           <span class="book-pub-date"><DateDisplay :date="entry.book.pub_date" /></span>
-          <button v-if="readable" class="mark-as-read-button button" @click="$emit('read')">
+          <button v-if="readable && (!entry.book.last_read_history || entry.book?.last_read_history?.want_to_reread)" class="mark-as-read-button button" @click="$emit('read')">
             <b-icon icon="check" />
-            <span>Mark as read <span v-if="entry.book.last_read_history">again</span></span>
+            <span>Mark as read</span>
+          </button>
+          <button v-else-if="readable" class="mark-as-read-button button" @click="$emit('want_to_reread')">
+            <b-icon icon="book" />
+            <span>Reread this</span>
           </button>
         </div>
     </div>
