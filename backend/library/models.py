@@ -74,6 +74,7 @@ class ReadingHistory(models.Model):
             data = BookReadingHistory.objects.get(book_id=self.book_id)
         except:
             data = BookReadingHistory(book_id=self.book_id)
+        data.want_to_reread = False
         data.save()
         pass
 
