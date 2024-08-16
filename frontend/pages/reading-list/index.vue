@@ -58,8 +58,8 @@ export default {
       this.$axios.$get(this.getApiUrl(route)).then(response => {
         this.readingLists = response.results.sort(
           (a, b) => {
-            const nextA = a.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date);
-            const nextB = b.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date);
+            const nextA = a.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date || e.book.last_read_history.want_to_reread);
+            const nextB = b.entries.find(e => !e.book.last_read_history || !e.book.last_read_history.read_date || e.book.last_read_history.want_to_reread);
 
             if(!nextA){
               return 1;
