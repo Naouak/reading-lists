@@ -53,9 +53,11 @@ def readable_books_query_set():
         .filter(available_online=1) \
         .exclude(modified_date__lt=timezone.make_aware(datetime.today())-timedelta(days=61))
 
+
 class BookReadingHistory(models.Model):
     book = models.OneToOneField(Book, related_name='last_read_history', on_delete=models.CASCADE)
     read_date = models.DateTimeField(blank=True, null=True)
+    want_to_reread = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         self.read_date = ReadingHistory.objects.filter(book_id=self.book_id).aggregate(Max('read_date'))[
