@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db.models import Min, Max, F, Count
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
@@ -11,7 +13,7 @@ from rest_framework.response import Response
 
 from library.models import BookSeries, Book, ReadingHistory, ReadingList, BookLink, ReadingListEntry, BookReadingHistory
 from library.serializers import BookSeriesSerializer, BookSerializer, ReadingHistorySerializer, ReadingListSerializer, \
-    BookLinkSerializer, ReadingListEntrySerializer
+    BookLinkSerializer, ReadingListEntrySerializer, BookReadingHistorySerializer
 
 
 def index(request):
@@ -94,6 +96,17 @@ class BookViewSet(viewsets.ModelViewSet):
         history.save()
         serializer = ReadingHistorySerializer(history)
         return Response(serializer.data)
+
+    @action(methods=['post'], detail=True)
+    def want_to_reread(self, request, pk=None):
+        history: BookReadingHistory = BookReadingHistory.objects.filter(book_id=pk).first()
+        if not history:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        history.want_to_reread = request.data['want_to_reread'] if 'want_to_reread' in request.data else True
+        history.save()
+        return Response(BookReadingHistorySerializer(history).data)
+
 
 
 class ReadingListViewSet(viewsets.ModelViewSet):
