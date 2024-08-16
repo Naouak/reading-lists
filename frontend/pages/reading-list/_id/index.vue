@@ -151,7 +151,7 @@ export default {
       return this.readingList?.series.map(s => s.id);
     },
     readEntries() {
-      return this.readingList?.entries.filter(e => e.book.last_read_history && e.book.last_read_history.read_date).length;
+      return this.readingList?.entries.filter(e => e.book.last_read_history && e.book.last_read_history.read_date && !e.book.last_read_history.want_to_reread).length;
     },
     progress() {
       if (this.readingList?.entries.length === 0) {
@@ -160,7 +160,7 @@ export default {
       return this.readEntries / this.readingList?.entries.length * 100;
     },
     nextEntry() {
-      return this.readingList?.entries?.find((e) => !e.book.last_read_history || !e.book.last_read_history.read_date);
+      return this.readingList?.entries?.find((e) => !e.book.last_read_history || !e.book.last_read_history.read_date  || e.book.last_read_history.want_to_reread);
     },
     seriesNames() {
       return this.readingList?.series.map(s => s.title).join(", ");
