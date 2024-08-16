@@ -99,7 +99,7 @@ export default {
       let booksToRead = this.booksToRead;
 
       if (this.filterRead) {
-        booksToRead = booksToRead.filter(b => !b?.book?.last_read_history);
+        booksToRead = booksToRead.filter(b => !b?.book?.last_read_history || b?.book?.last_read_history?.want_to_reread);
       }
 
       return booksToRead.slice(0, this.numberToShow);
