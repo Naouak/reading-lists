@@ -1,32 +1,17 @@
 <template>
   <section class="home-page section">
-    <div class="recent-books-list">
-      <h1 class="title">Recent additions</h1>
-      <div class="book-list">
-        <Book v-for="book in recentBooks" :key="book.id" :book="book" />
-      </div>
-    </div>
-    <div class="recent-books-list">
-      <h1 class="title">New titles</h1>
-      <div class="book-list">
-        <Book v-for="book in newBooks" :key="book.id" :book="book" />
-      </div>
-    </div>
-    <div class="recent-books-list">
-      <h1 class="title">New Infinity Comics</h1>
-      <div class="book-list">
-        <Book v-for="book in infinityComics" :key="book.id" :book="book" />
-      </div>
-    </div>
+    <RecentBookList title="Recent additions" :books="recentBooks" />
+    <RecentBookList title="New titles" :books="newBooks" />
+    <RecentBookList title="New Infinity Comics" :books="infinityComics" />
   </section>
 </template>
 
 <script>
-import Book from "~/components/Book";
+import RecentBookList from "~/pages/RecentBookList.vue";
 
 export default {
   name: 'HomePage',
-  components: {Book},
+  components: { RecentBookList},
   data() {
     return {
       recentBooks: [],
