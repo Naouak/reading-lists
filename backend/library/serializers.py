@@ -15,7 +15,7 @@ class BookSerializer(serializers.ModelSerializer):
     last_read_history = BookReadingHistorySerializer(read_only=True)
     class Meta:
         model = Book
-        fields = ['id', 'external_id', 'cover_url', 'pub_date', 'read_online_url', 'series', 'title', 'type', 'last_read_history', 'availability_date', 'available_online', 'availability_last_check']
+        fields = ['id', 'external_id', 'cover_url', 'pub_date', 'read_online_url', 'series', 'title', 'type', 'last_read_history', 'availability_date', 'available_online', 'availability_last_check', 'created_date']
 
 class ReadingHistorySerializer(serializers.ModelSerializer):
     class Meta:
