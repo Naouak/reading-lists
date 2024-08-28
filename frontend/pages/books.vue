@@ -31,6 +31,24 @@
             </div>
           </div>
         </div>
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field">
+              <p class="control has-icons-left">
+                <select v-model="ordering">
+                  <option value="-created_date">Creation (Newest first)</option>
+                  <option value="created_date">Creation (Oldest first)</option>
+                  <option value="-pub_date">Publication (Newest first)</option>
+                  <option value="pub_date">Publication (Oldest first)</option>
+                  <option value="-availability_date">Availability (Newest first)</option>
+                  <option value="availability_date">Availability (Oldest first)</option>
+                  <option value="-availability_last_check">Found (Newest first)</option>
+                  <option value="availability_last_check">Found (Oldest first)</option>
+                </select>
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <section v-if="books && books.length" class="books-books section card-content">
@@ -72,7 +90,8 @@ export default {
     return {
       page: null,
       search: '',
-      available_online: null,
+      available_online: 1,
+      ordering: "-availability_last_check",
       books: [],
       hasNextPage: false,
       hasPreviousPage: false,
@@ -80,22 +99,10 @@ export default {
   },
   computed: {
     previousPageUrl() {
-      return this.hasPreviousPage && {
-        name: 'books',
-        query: {
-          page: this.page - 1,
-          search: this.search,
-        }
-      };
+      return this.hasPreviousPage && this.buildRoute({page: this.page - 1});
     },
     nextPageUrl() {
-      return this.hasNextPage && {
-        name: 'books',
-        query: {
-          page: this.page + 1,
-          search: this.search,
-        }
-      };
+      return this.hasNextPage && this.buildRoute({page: this.page + 1});
     }
   },
   watch: {
@@ -106,24 +113,24 @@ export default {
       if (to && from && to.trim() === from.trim()) {
         return;
       }
-      const query = {
-        page: 1,
-      };
-
-      if (to && to.trim().length > 0) {
-        query.search = to;
-      }
-
-      this.$router.push({
-        name: 'books',
-        query,
-      });
+      this.$router.push(this.buildRoute({page: 1, search: to}))
     },
-    available_online(){
-      this.updateComponent(this.$route);
+    available_online(to){
+      this.$router.push(this.buildRoute({page: 1, available_online: to}))
+    },
+    ordering(to){
+      this.$router.push(this.buildRoute({page: 1, ordering: to}))
     }
   },
   methods: {
+    buildRoute(change){
+      const query = {};
+      query.page = change.page || this.page;
+      query.search = change.search || this.search;
+      query.available_online = change.available_online || this.available_online;
+      query.ordering = change.ordering || this.ordering;
+      return {name: 'books', query};
+    },
     updateComponent(route) {
       this.page = parseInt(route.query.page || 1);
 
@@ -148,6 +155,8 @@ export default {
       if (this.available_online !== null ) {
         params.push("available_online="+ (this.available_online?"1":"0"));
       }
+
+      params.push("ordering="+this.ordering);
       return '/book/?' + params.join('&');
     }
   },
