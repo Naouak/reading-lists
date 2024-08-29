@@ -138,6 +138,13 @@ export default {
         this.search = route.query.search;
       }
 
+      if(route.query.ordering !== undefined && route.query.ordering !== this.ordering){
+        this.ordering = route.query.ordering;
+      }
+      if(route.query.available_online !== undefined && route.query.available_online !== this.available_online){
+        this.available_online = route.query.available_online;
+      }
+
       this.$axios.$get(this.getApiUrl()).then(response => {
         this.hasNextPage = !!response.next;
         this.hasPreviousPage = !!response.previous;
