@@ -1,6 +1,4 @@
-from typing import Any
-
-from django.db.models import Min, Max, F, Count
+from django.db.models import Min, Max, F, Count, Q
 from django.http import HttpResponse
 from django.utils.dateparse import parse_datetime
 from django.utils.datetime_safe import date
@@ -24,15 +22,28 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
     queryset = BookSeries.objects.all().order_by('id')
     serializer_class = BookSeriesSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
 
     def get_queryset(self):
         queryset = super().get_queryset()
         search = self.request.query_params.get('search', None)
+        book_count = self.request.query_params.get('book_count', None)
+        available = self.request.query_params.get('available', None)
 
         if search is not None:
             search_terms = search.split(" ")
             for term in search_terms:
                 queryset = queryset.filter(title__icontains=term)
+
+        if book_count is not None:
+            # Can't annotate as `book_count` because the attribute is already used
+            queryset = queryset.annotate(size=Count('book')).filter(size__gte=book_count)
+
+        if available is not None:
+            queryset = (queryset
+                        .annotate(available=Count('book', filter=Q(book__available_online=True)))
+                        .filter(available__gt=0)
+                        )
 
         queryset = queryset.annotate(pub_date=Min("book__pub_date")).order_by('pub_date')
 
