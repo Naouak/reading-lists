@@ -17,6 +17,44 @@
           </div>
         </div>
       </div>
+      <div class="card-content">
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field">
+              <p class="control has-icons-left">
+                <select v-model="available">
+                  <option :value="null">All</option>
+                  <option :value="1">Only Available</option>
+                  <option :value="0">Only non Available</option>
+                </select>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field">
+              <p class="control has-icons-left">
+                <input type="number" min="0" v-model="book_count">
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="field is-horizontal">
+          <div class="field-body">
+            <div class="field">
+              <p class="control has-icons-left">
+                <select v-model="ordering">
+                  <option value="title">Title (A -> Z)</option>
+                  <option value="-title">Title (Z -> A)</option>
+                  <option value="-pub_date">Publication (Newest first)</option>
+                  <option value="pub_date">Publication (Oldest first)</option>
+                </select>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <section class="card-content section columns is-multiline">
         <div v-for="series in seriesList" :key="series.id" class="column is-6">
@@ -42,7 +80,10 @@ export default {
     return {
       page: null,
       search: '',
+      book_count: 1,
       seriesList: [],
+      available: 1,
+      ordering: "pub_date",
       hasPreviousPage: false,
       hasNextPage: false,
     };
@@ -75,25 +116,38 @@ export default {
       if(to && from && to.trim() === from.trim()){
         return;
       }
-
-      this.$router.push({
-        to: 'series',
-        query: {
-          page: 1,
-          search: to,
-        },
-      });
+      this.$router.push(this.buildRoute({page: 1}));
     },
+    available(){
+      this.$router.push(this.buildRoute({page: 1}));
+    },
+    ordering(){
+      this.$router.push(this.buildRoute({page: 1}));
+    },
+    book_count(){
+      this.$router.push(this.buildRoute({page: 1}));
+    }
   },
   beforeMount() {
     this.updateComponent(this.$route);
   },
   methods: {
     updateComponent(route) {
-      this.page = parseInt(route.query.page || 1);
-
-      if(route.query.search !== this.search){
+      const page =  parseInt(route.query.page || "1");
+      if (this.page !== page){
+        this.page = page;
+      }
+      if(route.query.search !== undefined && route.query.search !== this.search){
         this.search = route.query.search;
+      }
+      if(route.query.book_count !== undefined && route.query.book_count !== this.book_count){
+        this.book_count = route.query.book_count;
+      }
+      if(route.query.available !== undefined && route.query.available !== this.available){
+        this.available = route.query.available;
+      }
+      if(route.query.ordering !== undefined && route.query.ordering !== this.ordering){
+        this.ordering = route.query.ordering;
       }
 
       this.$axios.$get(this.getApiUrl()).then(response => {
@@ -101,6 +155,18 @@ export default {
         this.hasPreviousPage = !!response.previous;
         this.seriesList = response.results;
       });
+    },
+    buildRoute(changes = {}){
+      return {
+        to: 'series',
+        query: {
+          page: changes.page || this.page,
+          search: changes.search || this.search,
+          available: changes.available || this.available,
+          book_count: changes.book_count || this.book_count,
+          ordering: changes.ordering || this.ordering,
+        }
+      }
     },
     getApiUrl(){
       const params = [];
@@ -110,6 +176,13 @@ export default {
       if(this.search && this.search.trim().length > 0){
         params.push("search="+encodeURIComponent(this.search));
       }
+      if (this.available !== null) {
+        params.push("available=" + (this.available ? "1" : "0"));
+      }
+      params.push("book_count=" + this.book_count);
+
+      params.push("ordering="+ this.ordering);
+
       return '/series/?'+params.join('&');
     }
   },
