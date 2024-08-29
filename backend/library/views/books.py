@@ -29,6 +29,7 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)
         book_count = self.request.query_params.get('book_count', None)
         available = self.request.query_params.get('available', None)
+        ordering = self.request.query_params.get('ordering', 'pub_date')
 
         if search is not None:
             search_terms = search.split(" ")
@@ -45,7 +46,8 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
                         .filter(available__gt=0)
                         )
 
-        queryset = queryset.annotate(pub_date=Min("book__pub_date")).order_by('pub_date')
+        if ordering in ['pub_date', '-pub_date']:
+            queryset = queryset.annotate(pub_date=Min("book__pub_date")).order_by(ordering)
 
         return queryset
 
