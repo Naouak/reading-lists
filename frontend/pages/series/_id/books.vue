@@ -1,7 +1,9 @@
 <template>
   <div class="section">
     <h1 class="title">{{series.title}}</h1>
-    <Book v-for="book in books" :key="book.id" :book="book" class="" />
+     <section v-if="books && books.length" class="books-books section card-content">
+        <Book class="books-book" v-for="book in books" :key="book.id" :book="book" />
+      </section>
   </div>
 </template>
 
