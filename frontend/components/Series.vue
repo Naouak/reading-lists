@@ -10,6 +10,7 @@
         <div class="media-content">
           <div class="content">
             <div class="subtitle">{{series.title}}</div>
+            <div class="subtitle">{{series.book_count}} issues</div>
           </div>
         </div>
       </div>
