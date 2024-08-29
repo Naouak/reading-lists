@@ -58,10 +58,28 @@ class BookViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
 
+    def prepare_search(self, queryset):
+        search = self.request.query_params.get('search', None)
+        if search is None:
+            return queryset
+
+        search_terms = search.split(" ")
+        for term in search_terms:
+            # ignore dashes
+            if term == "-":
+                continue
+
+            # if starts with a dash then it's an exclude term
+            if term.startswith("-"):
+                queryset = queryset.exclude(title__icontains=term[1:])
+                continue
+
+            queryset = queryset.filter(title__icontains=term)
+        return queryset
+
     def get_queryset(self):
         queryset = super().get_queryset()
         series = self.request.query_params.get('series', None)
-        search = self.request.query_params.get('search', None)
         exclude_term = self.request.query_params.get('exclude_term', None)
         only_available = self.request.query_params.get('only_available', None)
         only_published = self.request.query_params.get('only_published', None)
@@ -77,23 +95,18 @@ class BookViewSet(viewsets.ModelViewSet):
 
         if series is not None:
             queryset = queryset.filter(series_id=series)
-        if search is not None:
-            search_terms = search.split(" ")
-            for term in search_terms:
-                queryset = queryset.filter(title__icontains=term)
         if exclude_term is not None:
             exclude = exclude_term.split(",")
             for term in exclude:
                 queryset = queryset.exclude(title__icontains=term)
-
         if only_available is not None:
             queryset = queryset.filter(availability_date__lte=date.today())
         if only_published is not None:
             queryset = queryset.filter(pub_date__lte=date.today())
-
         if available_online is not None:
             queryset = queryset.filter(available_online=available_online)
 
+        queryset = self.prepare_search(queryset)
         return queryset
 
     @action(methods=['post'], detail=True)
