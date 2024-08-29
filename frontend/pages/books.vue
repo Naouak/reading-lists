@@ -106,7 +106,7 @@ export default {
     }
   },
   watch: {
-    $route(to, from) {
+    $route(to) {
       this.updateComponent(to);
     },
     search(to, from) {
@@ -132,7 +132,7 @@ export default {
       return {name: 'books', query};
     },
     updateComponent(route) {
-      this.page = parseInt(route.query.page || 1);
+      this.page = parseInt(route.query.page || "1");
 
       if (route.query.search !== this.search) {
         this.search = route.query.search;
