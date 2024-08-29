@@ -23,7 +23,7 @@ class BookSeries(models.Model):
 
     @property
     def cover_url(self):
-        query_set = Book.objects.filter(series=self).order_by('pub_date')
+        query_set = Book.objects.filter(series=self, cover_url__isnull=False).order_by('pub_date')
         if len(query_set) == 0:
             return None
         return query_set[0].cover_url
