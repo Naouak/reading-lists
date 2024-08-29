@@ -157,6 +157,7 @@ export default {
       }
 
       params.push("ordering="+this.ordering);
+      params.push("limit=120");
       return '/book/?' + params.join('&');
     }
   },

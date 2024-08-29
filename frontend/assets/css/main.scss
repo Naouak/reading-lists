@@ -110,15 +110,18 @@
 }
 
 .books-book {
-  flex-basis: 0;
   flex-grow: 1;
-  flex-shrink: 1;
-
-
+  flex-basis: 0;
   box-shadow: 0 2px 3px rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 10%);
   border-radius: 5px;
-  min-width: 250px;
+  box-sizing: border-box;
+  // Ensure minimum width for mobile and maximum width to 6 items per row
+  // (so that 120 results always have the right amount of items [2*2*3*5])
+  min-width: max(calc(412px - 96px), calc((100% - 96px) / 6));
+  width: 100%;
   margin: 5px;
+  vertical-align: top;
+
 }
 
 .home-page .column {
