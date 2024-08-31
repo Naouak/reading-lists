@@ -133,12 +133,10 @@ export default {
           const date = new Date(data.date);
 
           const lastWeek = new Date();
-          lastWeek.setTime(date.getTime());
-          lastWeek.setDate(date.getDate() - 7);
+          lastWeek.setTime(date.getTime() - 6*24*3600*1000);
 
           const lastMonth = new Date();
-          lastMonth.setTime(date.getTime());
-          lastMonth.setDate(date.getDate() - 30);
+          lastMonth.setTime(date.getTime() - 29*24*3600*1000);
 
           sevenDaysAverage = sevenDaysAverage.filter(d => {
             return d.t.getTime() >= lastWeek.getTime();
