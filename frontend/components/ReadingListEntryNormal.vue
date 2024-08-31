@@ -10,7 +10,7 @@
                      'has-text-success': !entry.book.last_read_history.want_to_reread,
                      'has-text-warning': entry.book.last_read_history.want_to_reread
                   }"
-                  v-if="entry.book.last_read_history" /> # {{entry.position}}
+                  v-if="read" /> # {{entry.position}}
         </div>
 
         <div class="cover-title">
@@ -55,10 +55,13 @@ export default {
   },
   computed: {
     want_to_read() {
-      return !this.entry.book.last_read_history || this.entry.book?.last_read_history?.want_to_reread;
+      return !this.read || this.entry.book?.last_read_history?.want_to_reread;
     },
     can_read() {
       return this.readable && this.want_to_read
+    },
+    read() {
+      return this.entry.book.last_read_history && this.entry.book.last_read_history.read_date;
     },
     read_url() {
       if (navigator.userAgent.match(/Android/i)){
