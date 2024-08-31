@@ -84,7 +84,7 @@ export default {
     history() {
       return this.entries.reduce((acc, entry) => {
         const date = new Date(entry.read_date);
-        const isodate = [date.getFullYear(), ("0" + (date.getUTCMonth() + 1)).substr(-2), ("0" + date.getDate()).substr(-2)].join('-');
+        const isodate = [date.getUTCFullYear(), ("0" + (date.getUTCMonth() + 1)).substr(-2), ("0" + date.getUTCDate()).substr(-2)].join('-');
         let current = acc[acc.length - 1];
         if (!current || current?.date !== isodate) {
           current = {date: isodate, entries: []};
