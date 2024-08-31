@@ -140,7 +140,7 @@ export default {
       loading: false,
       booksLeftToAdd: 0,
       booksTotalToAdd: 1,
-      reverseEntriesOrder: false,
+      reverseEntriesOrder: true,
     };
   },
   computed: {

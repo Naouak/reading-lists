@@ -94,9 +94,9 @@ export default {
       hasNextPage: false,
       hasPreviousPage: false,
       isScheduledForUpdate: false,
-      hideSelectedItems: false,
+      hideSelectedItems: true,
       cancelToken: null,
-      available_only: false
+      available_only: true
     };
   },
   computed: {
