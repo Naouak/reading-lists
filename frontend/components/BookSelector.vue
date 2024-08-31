@@ -23,14 +23,7 @@
       </label>
     </div>
     <div class="card-content">
-      <nav class="pagination is-centered">
-        <a class="pagination-previous" :disabled="!hasPreviousPage" @click="hasPreviousPage && (page=page-1)">Previous
-          Page</a>
-        <div class="pagination-list">
-          <span class="pagination-link is-current">{{ page }}</span>
-        </div>
-        <a class="pagination-next" :disabled="!hasNextPage" @click="hasNextPage && (page=page+1)">Next Page</a>
-      </nav>
+      <BookSelectorPagination :has-next-page="hasNextPage" :has-previous-page="hasPreviousPage" :max-page="maxPage" v-model="page" />
     </div>
     <ul class="card-content">
       <li class="box" v-for="(book, index) in availableBooks" :key="book.id" :class="{'book-selector-target': index === target}">
@@ -42,10 +35,11 @@
 
 <script>
 import BookSelectorResult from "~/components/BookSelectorResult.vue";
+import BookSelectorPagination from "~/components/BookSelectorPagination.vue";
 
 export default {
   name: "BookSelector",
-  components: { BookSelectorResult },
+  components: { BookSelectorPagination, BookSelectorResult },
   /**
    * @returns {{books: Book[]}}
    */
@@ -66,6 +60,8 @@ export default {
       cancelToken: null,
       available_only: true,
       target: 0,
+      limit: 100,
+      maxPage: null,
     };
   },
   computed: {
@@ -140,6 +136,7 @@ export default {
       ).then(response => {
         this.hasNextPage = !!response.next;
         this.hasPreviousPage = !!response.previous;
+        this.maxPage = Math.ceil(response.count / this.limit);
         this.books = response.results;
         this.cancelToken = null;
         this.target = 0;
@@ -156,6 +153,8 @@ export default {
       if (this.search && this.search.trim().length > 0) {
         params.push("search=" + encodeURIComponent(this.search));
       }
+      params.push("limit=" + this.limit);
+
       return "/book/?" + params.join("&");
     },
     selectBook(book) {
