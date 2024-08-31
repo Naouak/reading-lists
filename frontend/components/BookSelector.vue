@@ -5,7 +5,11 @@
         <div class="field-body">
           <div class="field">
             <p class="control has-icons-left">
-              <input v-model="search" type="text" class="input" placeholder="Filter" v-on:keyup.enter="selectTarget" v-on:keyup.down="target+=1" v-on:keyup.up="target = Math.max(target - 1, 0)" />
+              <input v-model="search" type="text" class="input" placeholder="Filter"
+                     v-on:keyup.enter="selectTarget"
+                     v-on:keyup.down="target = Math.min(target+1, availableBooks.length-1)"
+                     v-on:keyup.up="target = Math.max(target - 1, 0)"
+              />
               <span class="icon is-left">
                 <b-icon icon="magnify" />
               </span>
