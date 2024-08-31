@@ -16,71 +16,25 @@
 
     <BlockedBooks v-if="blockedBooks" :blocked-books="blockedBooks" />
 
-    <div class="reading-lists columns is-multiline" v-if="!fullView">
-      <div v-for="(entry) in booksToReadToDisplay" :key="entry.id" class="column">
-        <div class="reading-list" v-if="entry.type !== 'empty_list' ">
-          <h2 class="reading-list-title">{{ entry.lists.map(l => l.title).sort().join(", ") }}</h2>
-          <ReadingListEntryNormal :entry="entry" @read="markAsRead(entry.book)" />
-        </div>
-        <div class="reading-list-end" v-else>
-          <h2 class="reading-list-title">{{ entry.list.title }}</h2>
-          <div>
-            <div class="reading-list-entry">
-              <div class="cover">
-                <nuxt-link class="reading-list-end-cover" :to="{name:'reading-list-id', params: {id: entry.list.id}}">
-                  The reading list {{ entry.list.title }} is done.
-                </nuxt-link>
-
-
-                <div class="mark-as-read">
-                  <span class="book-pub-date"></span>
-                  <nuxt-link class="mark-as-read-button button"
-                             :to="{name:'reading-list-id', params: {id: entry.list.id}}">
-                    <b-icon icon="check" />
-                    <span>Edit List</span>
-                  </nuxt-link>
-                </div>
-              </div>
-
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="list-block" v-else>
-      <table class="whats-next-full-list">
-        <tr>
-          <th>Title</th>
-          <th>Read?</th>
-          <th>Publication Date</th>
-          <th>Reading Lists</th>
-        </tr>
-        <tr v-for="(entry) in booksToReadWithoutLists" :key="entry.id" :class="{
-          read: !!entry.book.last_read_history
-        }">
-          <td>{{ entry.book.title }}</td>
-          <td>{{ entry.book.last_read_history ? "Read" : "" }}</td>
-          <td>{{ entry.book.pub_date }}</td>
-          <td>{{ entry.lists.map(l => l.title).sort().join(", ") }}</td>
-        </tr>
-      </table>
-
-    </div>
+    <Books :entries="booksToReadToDisplay"
+                    @read="markAsRead" v-if="!fullView" />
+    <Table :books-to-read-without-lists="booksToReadWithoutLists"  v-else />
   </div>
 </template>
 
 <script>
 
-import ReadingListEntryNormal from "~/components/ReadingListEntryNormal";
 import BlockedBooks from "~/components/BlockedBooks";
 import { sortReadingLists } from "~/utils/reading-list-sort";
+import Books from "~/components/WhatsNext/Books.vue";
+import Table from "~/components/WhatsNext/Table.vue";
 
 export default {
   name: "reading-list",
   components: {
-    BlockedBooks,
-    ReadingListEntryNormal
+    Table,
+    Books,
+    BlockedBooks
   },
   data() {
     return {
