@@ -5,7 +5,7 @@
         <div class="field-body">
           <div class="field">
             <p class="control has-icons-left">
-              <input v-model="search" type="text" class="input" placeholder="Filter" v-on:keyup.enter="selectFirst" />
+              <input v-model="search" type="text" class="input" placeholder="Filter" v-on:keyup.enter="selectTarget" v-on:keyup.down="target+=1" v-on:keyup.up="target = Math.max(target - 1, 0)" />
               <span class="icon is-left">
                 <b-icon icon="magnify" />
               </span>
@@ -33,7 +33,7 @@
       </nav>
     </div>
     <ul class="card-content">
-      <li class="box" v-for="book in availableBooks" :key="book.id">
+      <li class="box" v-for="(book, index) in availableBooks" :key="book.id" :class="{'book-selector-target': index === target}">
         <div class="media">
           <div class="media-left">
             <figure style="width: 70px;">
@@ -96,7 +96,8 @@ export default {
       isScheduledForUpdate: false,
       hideSelectedItems: true,
       cancelToken: null,
-      available_only: true
+      available_only: true,
+      target: 0,
     };
   },
   computed: {
@@ -129,7 +130,7 @@ export default {
     }
   },
   methods: {
-    selectFirst() {
+    selectTarget() {
       if (this.cancelToken) {
         // Still loading some results
         return;
@@ -139,14 +140,14 @@ export default {
         return;
       }
 
-      const book = this.availableBooks[0];
+      const book = this.availableBooks[this.target];
 
       if(this.selectedBooks.includes(book.id)){
         // Already in the list
         return;
       }
 
-      this.selectBook(this.availableBooks[0]);
+      this.selectBook(book);
     },
     scheduleUpdate() {
       if (this.isScheduledForUpdate) {
@@ -173,6 +174,7 @@ export default {
         this.hasPreviousPage = !!response.previous;
         this.books = response.results;
         this.cancelToken = null;
+        this.target = 0;
       });
     },
     getApiUrl() {
