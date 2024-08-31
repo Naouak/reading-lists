@@ -34,50 +34,18 @@
     </div>
     <ul class="card-content">
       <li class="box" v-for="(book, index) in availableBooks" :key="book.id" :class="{'book-selector-target': index === target}">
-        <div class="media">
-          <div class="media-left">
-            <figure style="width: 70px;">
-              <img style="width: auto; height: auto;" :src="book.cover_url" :alt="book.title" loading="lazy" />
-            </figure>
-          </div>
-          <div class="media-content">
-            <div class="content">
-              <div class="subtitle">
-                <b-icon v-if="!book.available_online" icon="cancel" />
-                {{ book.title }}
-              </div>
-              <div>
-                Published on
-                <DateDisplay :date="book.pub_date" />
-              </div>
-            </div>
-
-            <div class="field has-addons">
-              <p class="control">
-                <button class="button" v-if="!selectedBooks.includes(book.id)" @click="selectBook(book)">
-                  <b-icon icon="plus" />
-                  <span>Select</span>
-                </button>
-              </p>
-              <p class="control">
-                <a :href="book.read_online_url" target="_blank" class="button">
-                  <b-icon :icon="book.available_online?'book-open-page-variant':'cancel'" />
-                  <span>Read online</span></a>
-              </p>
-            </div>
-          </div>
-        </div>
+        <BookSelectorResult :book="book" :selected="selectedBooks.includes(book.id)" @selected="selectBook(book)"  />
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import DateDisplay from "~/components/DateDisplay";
+import BookSelectorResult from "~/components/BookSelectorResult.vue";
 
 export default {
   name: "BookSelector",
-  components: { DateDisplay },
+  components: { BookSelectorResult },
   /**
    * @returns {{books: Book[]}}
    */
