@@ -2,7 +2,17 @@
   <section class="section">
     <h1 class="title">History</h1>
 
-    <div class="box">
+    <label>
+      <input type="radio" v-model="displayedChart" value="all-time" /> All time
+    </label>
+    <label>
+      <input type="radio" v-model="displayedChart" value="recent" /> Recent
+    </label>
+    <label>
+      <input type="radio" v-model="displayedChart" value="none" /> Don't show
+    </label>
+
+    <div class="box" v-if="displayedChart === 'all-time'">
       <h2>All time</h2>
       <bar-chart :data="readSummary" :options="{
         maintainAspectRatio: false,
@@ -22,7 +32,7 @@
     }" />
     </div>
 
-    <div class="box">
+    <div class="box" v-if="displayedChart === 'recent'">
       <h2>In the last <input type="number" v-model="recentHistoryDays"> days</h2>
       <bar-chart :data="recentReadSummary" :options="{
         maintainAspectRatio: false,
@@ -65,6 +75,7 @@ export default {
     return {
       readSummary: null,
       recentHistoryDays: 180,
+      displayedChart: 'recent',
       entries: [],
     };
   },
