@@ -16,6 +16,8 @@
           </button>
           <button v-else class="button is-primary" @click="enableReadBefore=!enableReadBefore">Disable Read Before
           </button>
+          <button class="button is-danger" @click="markForReread">Reread list</button>
+          <button class="button is-danger" @click="markForRead">Remove Reread</button>
         </div>
       </div>
     </div>
@@ -214,8 +216,8 @@ export default {
       // Just put them as read some time before the tool was developed
       this.$api.bookRead(book, "2020-02-01T00:00:00Z").then(() => this.updateComponent());
     },
-    wantToReread(book){
-      this.$api.bookWantToReread(book).then(() => this.updateComponent());
+    wantToReread(book, wantToReread = true){
+      return this.$api.bookWantToReread(book, wantToReread).then(() => this.updateComponent());
     },
     remove(entry) {
       this.$axios.$delete("/reading-list/" + this.readingListId + "/entries/" + entry.id + "/")
@@ -225,6 +227,36 @@ export default {
       this.$axios.$patch("/reading-list/" + this.readingListId + "/", {
         "archived": !this.readingList.archived
       }).then(() => this.updateComponent());
+    },
+    massUpdateReread(books, wantToReread){
+      return books.reduce(
+        (promise, entry, index) =>
+          promise
+            // Update regularly the UI
+            .then(() => index % 10 === 0 && this.updateComponent())
+            // Update next book in the list
+            .then(() => this.$api.bookWantToReread(entry.book, wantToReread)),
+        Promise.resolve()
+      )
+        .then(() => this.updateComponent());
+    },
+    markForReread() {
+      if (!confirm("Are you sure you want to reread this list?")) {
+        return;
+      }
+      const toUpdate = this.readingList.entries.filter(
+        entry => entry.book.last_read_history && !entry.book.last_read_history.want_to_reread
+      );
+      return this.massUpdateReread(toUpdate, true);
+    },
+    markForRead() {
+      if(!confirm("Are you sure you want to mark as read again books this list?")){
+        return;
+      }
+      const toUpdate = this.readingList.entries.filter(
+        entry => entry.book.last_read_history && entry.book.last_read_history.want_to_reread
+      );
+      return this.massUpdateReread(toUpdate, false);
     },
     addSeries(series) {
       this.loading = true;

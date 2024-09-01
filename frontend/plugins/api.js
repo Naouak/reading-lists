@@ -11,8 +11,8 @@ class Api {
     return this.$axios.$post('/book/' + book.id + '/read/', data);
   }
 
-  bookWantToReread(book) {
-    return this.$axios.$post('/book/' + book.id + '/want_to_reread/');
+  bookWantToReread(book, wantToReread = true) {
+    return this.$axios.$post('/book/' + book.id + '/want_to_reread/', {want_to_reread: wantToReread});
   }
 }
 
