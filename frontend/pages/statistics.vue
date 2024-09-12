@@ -1,6 +1,23 @@
 <template>
   <div class="section">
     <h1 class="title">Statistics</h1>
+
+    <div class="box">
+      <h2 class="subtitle">Set Target</h2>
+      <div class="columns">
+        <div class="column">
+          <button class="button" @click="target_percentage=Math.ceil(read_progress)">Next % ({{ Math.ceil(read_progress) }}%)
+          </button>
+          <button class="button" @click="target_percentage=Math.ceil(read_progress)+1">
+            Next + 1 % ({{ Math.ceil(read_progress) + 1 }}%)
+          </button>
+          <button class="button" @click="target_percentage=50">50%</button>
+          <button class="button" @click="target_percentage=70">70%</button>
+          <button class="button" @click="target_percentage=100">100%</button>
+        </div>
+      </div>
+    </div>
+
     <div class="box">
       <h2 class="subtitle">Total Progress</h2>
       <Progress :value="read_progress">{{ stats.read_books }} / {{ stats.total_books }} read ({{ read_progress }}%)
@@ -28,24 +45,27 @@
 
     <div class="box">
       <h2 class="subtitle">Time to read up to <input type="number" v-model="target_percentage"
-                                                                             step="10" min="10" max="100">%</h2>
+                                                     step="10" min="10" max="100">%</h2>
       <div class="columns" style="text-align: center">
         <div class="column">
           <div class="subtitle">Time to finish (based on last week)</div>
           <div class="title">
-            <TimeLeft :time_left="timeToReadEverything(stats.read_last_week,7,stats.read_books,stats.total_books,target_percentage / 100)" />
+            <TimeLeft
+              :time_left="timeToReadEverything(stats.read_last_week,7,stats.read_books,stats.total_books,target_percentage / 100)" />
           </div>
         </div>
         <div class="column">
           <div class="subtitle">Time to finish (based on last month)</div>
           <div class="title">
-            <TimeLeft :time_left="timeToReadEverything(stats.read_last_month,30,stats.read_books,stats.total_books,target_percentage / 100)" />
+            <TimeLeft
+              :time_left="timeToReadEverything(stats.read_last_month,30,stats.read_books,stats.total_books,target_percentage / 100)" />
           </div>
         </div>
         <div class="column">
           <div class="subtitle">Time to finish (based on last year)</div>
           <div class="title">
-            <TimeLeft :time_left="timeToReadEverything(stats.read_last_year,365,stats.read_books,stats.total_books,target_percentage / 100)" />
+            <TimeLeft
+              :time_left="timeToReadEverything(stats.read_last_year,365,stats.read_books,stats.total_books,target_percentage / 100)" />
           </div>
         </div>
       </div>
@@ -224,7 +244,7 @@ export default {
 
       const daysLeft = Math.floor(duration * (total * targetRatio - done) / (read - added * targetRatio));
 
-      if(daysLeft < 0 && done < total*targetRatio){
+      if (daysLeft < 0 && done < total * targetRatio) {
         return 0;
       }
 
