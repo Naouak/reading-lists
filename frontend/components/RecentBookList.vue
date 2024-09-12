@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import Book from "~/components/Book";
+import Book from "~/components/Book.vue";
 
 export default {
   name: "RecentBookList",

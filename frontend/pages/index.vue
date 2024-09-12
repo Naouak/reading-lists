@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import RecentBookList from "~/pages/RecentBookList.vue";
+import RecentBookList from "~/components/RecentBookList.vue";
 
 export default {
   name: 'HomePage',
