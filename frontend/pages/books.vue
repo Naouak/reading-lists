@@ -5,18 +5,7 @@
       <div class="card-content">
         <Pagination :page="page" :next-page-url="nextPageUrl" :previous-page-url="previousPageUrl" />
       </div>
-      <div class="card-content">
-        <div class="field is-horizontal">
-          <div class="field-body">
-            <div class="field">
-              <p class="control has-icons-left">
-                <input v-model="search" type="text" class="input" placeholder="Filter" />
-                <span class="icon is-left"><b-icon icon="magnify" /></span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <SearchCard v-model="search" />
       <div class="card-content">
         <div class="field is-horizontal">
           <div class="field-body">
@@ -68,8 +57,9 @@
 </template>
 
 <script>
-import Book from '../components/Book';
+import Book from "../components/Book";
 import Pagination from "~/components/Pagination";
+import SearchCard from "~/components/SearchCard.vue";
 
 /**
  * @typedef {Object} Book
@@ -80,6 +70,7 @@ import Pagination from "~/components/Pagination";
 export default {
   name: 'Books',
   components: {
+    SearchCard,
     Pagination,
     Book,
   },
