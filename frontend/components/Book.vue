@@ -8,10 +8,25 @@
         </div>
       </a>
 
-
       <div class="mark-as-read">
-        <span class="book-pub-date"><DateDisplay :date="book.pub_date" /></span>
+        <div>
+          <select>
+            <option class="book-pub-date">
+              Published:
+              <DateDisplay :date="book.pub_date" />
+            </option>
+            <option class="book-pub-date">
+              Created:
+              <DateDisplay :date="book.created_date" />
+            </option>
+            <option class="book-pub-date">
+              Available:
+              <DateDisplay v-if="book.available_online" :date="book.availability_date" />
+              <span v-else>Not Available</span>
+            </option>
+          </select>
 
+        </div>
         <span v-if="book.last_read_history">Read on <DateDisplay :date="book.last_read_history.read_date" /></span>
         <span v-else>Not read yet</span>
       </div>
@@ -24,11 +39,11 @@
 import DateDisplay from "~/components/DateDisplay";
 
 export default {
-  components: {DateDisplay},
+  components: { DateDisplay },
   props: {
     book: {
-      type: Object,
-    },
-  },
+      type: Object
+    }
+  }
 };
 </script>
