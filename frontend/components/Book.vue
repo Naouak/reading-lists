@@ -24,6 +24,11 @@
               <DateDisplay v-if="book.available_online" :date="book.availability_date" />
               <span v-else>Not Available</span>
             </option>
+            <option class="book-pub-date">
+              Found:
+              <DateDisplay v-if="book.available_online" :date="book.availability_last_check" />
+              <span v-else>Not Available</span>
+            </option>
           </select>
 
         </div>
