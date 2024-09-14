@@ -1,3 +1,27 @@
+.whats-next-list{
+  position: relative;
+
+  min-height: 200px;
+}
+
+.whats-next-loader{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  text-align: center;
+  font-size: 3em;
+  background: rgba(255,255,255,.7);
+  z-index: 1;
+
+  .loader-container{
+    display: inline-block;
+    font-size: .8em;
+  }
+}
+
 .whats-next-full-list{
   .read{
     opacity: .7;

@@ -14,11 +14,18 @@
       </label>
     </div>
 
-    <BlockedBooks v-if="blockedBooks" :blocked-books="blockedBooks" />
+    <div class="whats-next-list">
+      <div class="whats-next-loader" v-if="status">
+        <span class="loader-container"><span class="loader"></span></span> {{ status }}...
+      </div>
 
-    <Books :entries="booksToReadToDisplay"
-                    @read="markAsRead" v-if="!fullView" />
-    <Table :books-to-read-without-lists="booksToReadWithoutLists"  v-else />
+      <BlockedBooks v-if="blockedBooks" :blocked-books="blockedBooks" />
+
+      <Books :entries="booksToReadToDisplay"
+             @read="markAsRead" v-if="!fullView" />
+      <Table :books-to-read-without-lists="booksToReadWithoutLists" v-else />
+    </div>
+
   </div>
 </template>
 
@@ -43,6 +50,7 @@ export default {
       fullView: false,
       blockedBooks: null,
       numberToShow: 50,
+      status: null
     };
   },
   computed: {
@@ -75,9 +83,12 @@ export default {
     updateComponent(route = this.$route) {
       this.readingLists = [];
       this.blockedBooks = null;
+      this.status = "loading";
       this.$axios.$get(this.getApiUrl(route)).then(response => {
+        this.status = "sorting";
         [this.booksToRead, this.blockedBooks] = sortReadingLists(response.results);
-      });
+        this.status = null;
+      })
     },
     getApiUrl(route = this.$route) {
       const params = [];
@@ -91,6 +102,7 @@ export default {
       return "/reading-list/?" + queryString;
     },
     markAsRead(book) {
+      this.status = 'updating';
       this.$api.bookRead(book).then(() => this.updateComponent());
     }
   }
