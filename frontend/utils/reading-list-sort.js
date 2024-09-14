@@ -3,14 +3,14 @@
  *
  * @returns {function(*, *, *): boolean}
  */
-function bookDeduper(){
+function bookDeduper() {
   let bookIds = null;
   return (entry, index, entries) => {
-    if(!bookIds){
+    if (!bookIds) {
       bookIds = entries.map(b => b.book.id);
     }
     return bookIds.indexOf(entry.book.id) === index;
-  }
+  };
 }
 
 /**
@@ -66,10 +66,10 @@ function findBooksDependencies(nextBooks, readingLists) {
  * @param readingLists
  * @returns {boolean}
  */
-function isFirstInEveryList(entry, readingLists){
+function isFirstInEveryList(entry, readingLists) {
   return !readingLists.find(
-      r => r.entries.map(e => e.book.id).indexOf(entry.book.id) > 0
-    )
+    r => r.entries.map(e => e.book.id).indexOf(entry.book.id) > 0
+  );
 }
 
 /**
@@ -80,22 +80,73 @@ function isFirstInEveryList(entry, readingLists){
  * @returns {*}
  */
 function findPossibleBooks(nextBooks, readingLists) {
-  let lowestDate = null;
-  const [possibleBooks] = nextBooks.reduce(([books, shouldContinue], entry) => {
-    if (!shouldContinue || lowestDate < entry.book.pub_time) {
-      return [books, false];
-    }
+  const possibleBooks = nextBooks.reduce((books, entry) => {
     // Check if book is not in another reading list
     // If it's the first entry of a list, we don't care about it. (as it is also a candidate for next book)
     const candidate = isFirstInEveryList(entry, readingLists);
     if (candidate) {
-      lowestDate = Math.min(lowestDate, entry.book.pub_time);
       books.push(entry);
-      return [books, true];
+      return books;
     }
-    return [books, true];
-  }, [[], true]);
+    return books;
+  }, []);
   return possibleBooks;
+}
+
+/**
+ * List all the lists in common between two lists
+ *
+ * @param list1
+ * @param list2
+ * @returns {*}
+ */
+function findCommonLists(list1, list2) {
+  const list1Ids = list1.map(l => l.id);
+  return list2.filter(l => list1Ids.includes(l.id));
+}
+
+/**
+ * Find every list containing the given book
+ *
+ * @param entry
+ * @param lists
+ * @returns {*}
+ */
+function findListsContainingEntry(entry, lists) {
+  return lists.filter(list => list.entries.map(entry => entry.book.id).includes(entry.book.id));
+}
+
+/**
+ * This tries to match the next book to followup as much as possible with the previous one.
+ *
+ * @param possibleBooks
+ * @param readingLists
+ * @param previousBook
+ * @returns {*}
+ */
+function selectFollowUpBook(possibleBooks, readingLists, previousBook) {
+  const { selectedBook } = possibleBooks.reduce(({ selectedBook, lists }, entry) => {
+    if (entry.book.pub_time < selectedBook.book.pub_time - 180 * 24 * 3600 * 1000) {
+      return { selectedBook: entry, lists };
+    }
+
+    if (entry.book.pub_time > selectedBook.book.pub_time + 180 * 24 * 3600 * 1000) {
+      return { selectedBook, lists };
+    }
+
+    const entryLists = findListsContainingEntry(entry, readingLists);
+    const commonLists = findCommonLists(previousBook.lists, entryLists);
+
+    if (commonLists.length > lists && entry.book.pub_time < selectedBook.book.pub_time + 180 * 24 * 3600 * 1000) {
+      return { selectedBook: entry, lists: commonLists.length };
+    }
+
+    return { selectedBook, lists };
+  }, {
+    selectedBook: possibleBooks[0],
+    lists: 0
+  });
+  return selectedBook;
 }
 
 /**
@@ -106,8 +157,15 @@ function findPossibleBooks(nextBooks, readingLists) {
  * @param wantBlockedBooks
  * @returns {(*|*[])[]|*[]}
  */
-function findNextBook(nextBooks, readingLists, wantBlockedBooks = true) {
-  const nextBook = findPossibleBooks(nextBooks, readingLists)[0];
+function findNextBook(nextBooks, readingLists, wantBlockedBooks = true, previousBook = null) {
+  const possibleBooks = findPossibleBooks(nextBooks, readingLists);
+
+  if (previousBook && possibleBooks.length > 1) {
+    // We want to try to keep storylines together when there is multiple conflicts
+    return [selectFollowUpBook(possibleBooks, readingLists, previousBook), null];
+  }
+
+  const nextBook = possibleBooks[0];
   if (nextBook) {
     return [nextBook, null];
   }
@@ -131,6 +189,7 @@ export function sortReadingLists(readingLists) {
   const originalReadingLists = JSON.parse(JSON.stringify(readingLists));
   const booksToRead = [];
   let blockedBooks = null;
+  let previousBook = null;
 
   while (true) {
     // Fetch the next book in each list sorted by date
@@ -140,7 +199,7 @@ export function sortReadingLists(readingLists) {
       break;
     }
 
-    const [nextBook, newBlockedBooks] = findNextBook(nextBooks, readingLists, !!blockedBooks);
+    const [nextBook, newBlockedBooks] = findNextBook(nextBooks, readingLists, blockedBooks === null, previousBook);
     blockedBooks = blockedBooks || newBlockedBooks;
 
     nextBook.lists = [];
@@ -156,6 +215,7 @@ export function sortReadingLists(readingLists) {
     });
 
     booksToRead.push(nextBook);
+    previousBook = nextBook;
 
     // Find empty reading lists and create an entry for "empty reading list"
     const emptyReadingLists = readingLists.filter(list => list.entries.length === 0);
