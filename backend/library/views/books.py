@@ -53,7 +53,7 @@ class BookSeriesViewSet(viewsets.ModelViewSet):
 
 
 class BookViewSet(viewsets.ModelViewSet):
-    queryset = Book.objects.all().order_by('pub_date')
+    queryset = Book.objects.all().order_by('pub_date', 'title')
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
