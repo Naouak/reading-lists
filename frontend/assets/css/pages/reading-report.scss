@@ -2,6 +2,27 @@
   padding-left: 10px;
   padding-right: 10px;
 
+  .reading-report-content{
+    position: relative;
+  }
+
+  .loading-splash{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    text-align: center;
+    font-size: 3em;
+    z-index: 1;
+
+    .loader-container {
+      display: inline-block;
+      font-size: .8em;
+    }
+  }
+
   .navigation{
     text-align: right;
   }
@@ -17,21 +38,33 @@
       font-weight: bold;
     }
 
-  .global-stats{
+  .global-stats-container{
     display: flex;
     justify-content: stretch;
     flex-wrap: wrap;
   }
 
+  .global-stats{
+    display: flex;
+    justify-content: stretch;
+    flex-wrap: wrap;
+    min-width: 300px;
+    flex: 1 0 26%;
+  }
+
   .stat-block {
     display: block;
-    flex: 1;
-    min-width: 300px;
+    flex: 1 0 34%;
+    min-width: 150px;
     margin: 5px;
     border: solid #e1e1e1 1px;
     border-radius: 5px;
     box-shadow: 0 0 5px #e1e1e1;
     padding: 5px;
+
+    &:last-child{
+      flex: 2 0 51%;
+    }
 
     .stats-full-value {
       text-align: center;
