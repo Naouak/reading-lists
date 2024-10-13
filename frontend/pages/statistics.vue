@@ -137,6 +137,13 @@
       </div>
     </div>
 
+    <StatsFuture
+      :total_book="stats.total_books"
+      :total_read="stats.read_books"
+      :read_per_month="stats.read_last_month"
+      :added_per_month="stats.added_last_month"
+    />
+
     <div class="box">
       <a class="button is-primary" href="/reading-report/">Monthly Reports</a>
       <a class="button is-primary" :href="'/reading-report/'+(new Date().getFullYear())">Yearly Reports</a>
@@ -150,11 +157,12 @@
 
 import Progress from "~/components/Progress.vue";
 import TimeLeft from "~/components/TimeLeft";
+import StatsFuture from "~/components/StatsFuture.vue";
 
 
 export default {
   name: "Statistics",
-  components: { TimeLeft, Progress },
+  components: { StatsFuture, TimeLeft, Progress },
   data() {
     return {
       "target_percentage": 100
