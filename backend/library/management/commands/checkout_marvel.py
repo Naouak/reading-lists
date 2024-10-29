@@ -36,7 +36,7 @@ class Command(BaseCommand):
                             help='Start with older first (used to check that older issues are still in the catalog)')
         parser.add_argument('-n', '--page_size', dest='limit',  metavar='N', type=int,
                             help='Start with older first (used to check that older issues are still in the catalog)')
-        parser.add_argument('-t', '--title', dest='title_starts_with',  metavar='title', type=int,
+        parser.add_argument('-t', '--title', dest='title_starts_with',  metavar='title', type=str,
                             help='Filter with title')
         parser.set_defaults(older_first=False, limit=100)
 
