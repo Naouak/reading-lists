@@ -36,6 +36,8 @@ class Command(BaseCommand):
                             help='Start with older first (used to check that older issues are still in the catalog)')
         parser.add_argument('-n', '--page_size', dest='limit',  metavar='N', type=int,
                             help='Start with older first (used to check that older issues are still in the catalog)')
+        parser.add_argument('-t', '--title', dest='title_starts_with',  metavar='title', type=int,
+                            help='Filter with title')
         parser.set_defaults(older_first=False, limit=100)
 
     def handle(self, *args, **options):
@@ -43,9 +45,10 @@ class Command(BaseCommand):
         max_pages = options['max_pages']
         older_first = options['older_first']
         limit = options['limit']
+        title_starts_with = options['title_starts_with']
 
         if type == "comics":
-            self.do_comics(max_pages, older_first, limit)
+            self.do_comics(max_pages, older_first, limit, title_starts_with)
         elif type == "series":
             self.do_series()
         elif type == "availability":
@@ -103,12 +106,14 @@ class Command(BaseCommand):
                     object.series = series
             object.save()
 
-    def do_comics(self, max_pages=None, older_first=False, limit=100):
+    def do_comics(self, max_pages=None, older_first=False, limit=100, title_starts_with=None):
         offset = 0
         done = False
         total = None
         while not done and offset < 500000:
             self.print("Checking page %d / %d " % (offset, total or 0))
+            if title_starts_with:
+                self.print("Filtered by title: %s" % title_starts_with)
             retry = 3
             while retry > 0:
                 try:
@@ -116,6 +121,7 @@ class Command(BaseCommand):
                         'orderBy': '-modified' if not older_first else 'modified',
                         'limit': limit,
                         'offset': offset,
+                        'titleStartsWith': title_starts_with
                     })
 
                     if total is None:
