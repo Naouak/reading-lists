@@ -17,7 +17,7 @@ idna==2.9
 jwcrypto==1.4.2
 Markdown==3.2.2
 marshmallow==3.19.0
-marvelous @ git+https://github.com/Naouak/marvelous.git@invalid-ean
+marvelous @ git+https://github.com/Naouak/marvelous.git@fix-issn
 mysqlclient==2.1.1
 oauthlib==3.1.0
 packaging==23.1
