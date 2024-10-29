@@ -117,12 +117,15 @@ class Command(BaseCommand):
             retry = 3
             while retry > 0:
                 try:
-                    comics = self.api_client.comics({
+                    params = {
                         'orderBy': '-modified' if not older_first else 'modified',
                         'limit': limit,
                         'offset': offset,
-                        'titleStartsWith': title_starts_with
-                    })
+                    }
+                    if title_starts_with:
+                        params['titleStartsWith'] = title_starts_with
+
+                    comics = self.api_client.comics(params)
 
                     if total is None:
                         total = comics.response['data']['total']
