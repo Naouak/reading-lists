@@ -1,7 +1,7 @@
 <template>
   <div class="">
     <div class="cover">
-      <a target="_blank" :href="book.read_online_url">
+      <a target="_blank" :href="'https://www.marvel.com/comics/issue/' + book.external_id + '/comics-collection'">
         <img :src="book.cover_url" :alt="book.title">
         <div class="cover-title">
           <div class="book-title">{{ book.title }}</div>

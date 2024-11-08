@@ -25,7 +25,7 @@
           </button>
         </p>
         <p class="control">
-          <a :href="book.read_online_url" target="_blank" class="button">
+          <a :href="'https://www.marvel.com/comics/issue/' + book.external_id + '/comics-collection'" target="_blank" class="button">
             <b-icon :icon="book.available_online?'book-open-page-variant':'cancel'" />
             <span>Read online</span></a>
         </p>

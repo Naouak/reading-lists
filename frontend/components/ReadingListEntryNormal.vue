@@ -64,10 +64,7 @@ export default {
       return this.entry.book.last_read_history && this.entry.book.last_read_history.read_date;
     },
     read_url() {
-      if (navigator.userAgent.match(/Android/i)){
-        return `https://www.marvel.com/comics/issue/${this.entry.book.external_id}/comics-collection`;
-      }
-      return this.entry.book.read_online_url;
+      return `https://www.marvel.com/comics/issue/${this.entry.book.external_id}/comics-collection`;
     }
   }
 };

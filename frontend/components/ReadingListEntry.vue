@@ -57,7 +57,7 @@
         </div>
         <div v-else class="field has-addons" style="flex-grow: 0">
           <p class="control">
-            <a v-if="entry.book.read_online_url" target="_blank" :href="entry.book.read_online_url" class="button">
+            <a v-if="entry.book.read_online_url" target="_blank" :href="'https://www.marvel.com/comics/issue/' + entry.book.external_id + '/comics-collection'" class="button">
               <b-icon icon="book-open-page-variant" />
               <span>Read Online</span>
             </a>
