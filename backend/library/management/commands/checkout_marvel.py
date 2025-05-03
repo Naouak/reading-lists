@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.utils.datetime_safe import datetime as dj_datetime
 from django.db.models.functions import Now
 from django.utils import timezone
+from django.utils.timezone import make_aware
 from marvelous.exceptions import ApiError
 
 from library.models import BookSeries, Book
@@ -140,8 +141,8 @@ class Command(BaseCommand):
             # read_online_url
             object.read_online_url = "https://read.marvel.com/#/book/%s" % book['digital_id']
             # pub_date
-            object.pub_date = book['release_date'] or datetime.datetime(1900, 1, 1, 12, 0, 0, 0)
-            object.availability_date = book['date_added_to_digital_comics']
+            object.pub_date = make_aware(datetime.datetime.strptime(book['release_date'], '%Y-%m-%d')) or datetime.datetime(1900, 1, 1, 12, 0, 0, 0)
+            object.availability_date = make_aware(datetime.datetime.strptime(book['date_added_to_digital_comics'], '%Y-%m-%d'))
             object.type = str(book['metadata']['format'] or 'comic').lower()[:64]
             # series
             if book['metadata']['series']:

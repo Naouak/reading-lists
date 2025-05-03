@@ -5,12 +5,9 @@ class MarvelCalendar:
 
     def check_calendar(self, start, end, limit = 35, page = 0):
         url = self.build_url(start, end, limit, page)
-        print(url)
         bifrost_data = requests.get(url).json()
-        print(bifrost_data)
         results = bifrost_data['data']['results'] if 'results' in bifrost_data['data'] else []
         if 'total' in bifrost_data['data'] and bifrost_data['data']['total'] > page*limit + limit:
-            print("Checking page "+str(page+1))
             results = results + self.check_calendar(start, end, limit, page+1)
 
         return results
