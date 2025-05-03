@@ -13,6 +13,7 @@ from marvelous.exceptions import ApiError
 from library.models import BookSeries, Book
 
 from library.utils.marvel_api import get_client
+from library.utils.marvel_calendar import MarvelCalendar
 
 
 class Command(BaseCommand):
@@ -29,15 +30,17 @@ class Command(BaseCommand):
         self.stderr.write(str(datetime.datetime.now()) + " - " + str(text))
 
     def add_arguments(self, parser):
-        parser.add_argument('type', choices=['series', 'comics', 'availability'], type=str)
+        parser.add_argument('type', choices=['series', 'comics', 'availability', 'calendar'], type=str)
         parser.add_argument('-p', '--max_pages', dest='max_pages', metavar='N', type=int,
                             help='Stop after checking N pages')
         parser.add_argument('-o', '--older_first', dest='older_first', action='store_true',
                             help='Start with older first (used to check that older issues are still in the catalog)')
-        parser.add_argument('-n', '--page_size', dest='limit',  metavar='N', type=int,
+        parser.add_argument('-n', '--page_size', dest='limit', metavar='N', type=int,
                             help='Start with older first (used to check that older issues are still in the catalog)')
-        parser.add_argument('-t', '--title', dest='title_starts_with',  metavar='title', type=str,
+        parser.add_argument('-t', '--title', dest='title_starts_with', metavar='title', type=str,
                             help='Filter with title')
+        parser.add_argument('-s', '--start-date', dest='start_date', metavar='start_date', type=str, help='YYYY-MM-DD start date for calendar')
+        parser.add_argument('-e', '--end-date', dest='end_date', metavar='end_date', type=str, help='YYYY-MM-DD end date for calendar')
         parser.set_defaults(older_first=False, limit=100)
 
     def handle(self, *args, **options):
@@ -46,6 +49,9 @@ class Command(BaseCommand):
         older_first = options['older_first']
         limit = options['limit']
         title_starts_with = options['title_starts_with']
+        start_date = options['start_date']
+        end_date = options['end_date']
+        print(options)
 
         if type == "comics":
             self.do_comics(max_pages, older_first, limit, title_starts_with)
@@ -53,6 +59,9 @@ class Command(BaseCommand):
             self.do_series()
         elif type == "availability":
             self.do_check_availability()
+        elif type == "calendar":
+            self.do_comics_from_calendar(start_date or (datetime.datetime.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'),
+                                         end_date or (datetime.datetime.today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d'))
 
     def import_series(self, series_list):
         for series in series_list:
@@ -102,6 +111,46 @@ class Command(BaseCommand):
                     object.series = series_query_set[0]
                 else:
                     series = BookSeries(title=book.series.name, external_id=book.series.id)
+                    series.save()
+                    object.series = series
+            object.save()
+
+    def do_comics_from_calendar(self, start, end):
+        calendar = MarvelCalendar()
+        books = calendar.check_calendar(start, end)
+        self.import_comics_from_calendar(books)
+
+    def import_comics_from_calendar(self, comics):
+        for book in comics:
+            if book['digital_id'] is None:
+                self.stdout.write(self.style.SUCCESS('No digital id for "%s"' % book['title']))
+                continue
+
+            query_set = Book.objects.filter(external_id=book['id'])
+            if len(query_set) >= 1:
+                self.stdout.write(self.style.SUCCESS('Updating comic "%s"' % book['title']))
+                object = query_set[0]
+            else:
+                self.stdout.write(self.style.SUCCESS('Importing comic "%s"' % book['title']))
+                object = Book(external_id=book['id'], type='comic')
+            object.external_source = 'marvel'
+            object.title = book['title']
+            # cover_url
+            object.cover_url = "https://cdn.marvel.com/u/prod/marvel" + book['image_url'] + "/portrait_uncanny.jpg"
+            # read_online_url
+            object.read_online_url = "https://read.marvel.com/#/book/%s" % book['digital_id']
+            # pub_date
+            object.pub_date = book['release_date'] or datetime.datetime(1900, 1, 1, 12, 0, 0, 0)
+            object.availability_date = book['date_added_to_digital_comics']
+            object.type = str(book['metadata']['format'] or 'comic').lower()[:64]
+            # series
+            if book['metadata']['series']:
+                series_id = book['metadata']['series']['id']
+                series_query_set = BookSeries.objects.filter(external_id=series_id)
+                if len(series_query_set) >= 1:
+                    object.series = series_query_set[0]
+                else:
+                    series = BookSeries(title=book['metadata']['series']['title'], external_id=book['metadata']['series']['id'])
                     series.save()
                     object.series = series
             object.save()
@@ -180,9 +229,10 @@ class Command(BaseCommand):
         yesterday = current_date - datetime.timedelta(days=1)
         last_week = current_date - datetime.timedelta(days=7)
 
-        books = Book.objects\
-            .filter(available_online=False)\
-            .filter(Q(availability_last_check__lt=last_week, pub_date__year__lt=current_date.year) | Q(availability_last_check__lt=yesterday, pub_date__year=current_date.year) | Q(availability_last_check=None))\
+        books = Book.objects \
+            .filter(available_online=False) \
+            .filter(Q(availability_last_check__lt=last_week, pub_date__year__lt=current_date.year) | Q(
+            availability_last_check__lt=yesterday, pub_date__year=current_date.year) | Q(availability_last_check=None)) \
             .order_by('-pub_date', '-modified_date')
 
         total_to_check = books.count()
