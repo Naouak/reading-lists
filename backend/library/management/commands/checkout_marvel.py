@@ -52,14 +52,16 @@ class Command(BaseCommand):
         title_starts_with = options['title_starts_with']
         start_date = options['start_date']
         end_date = options['end_date']
-        print(options)
 
         if type == "comics":
             self.do_comics(max_pages, older_first, limit, title_starts_with)
         elif type == "series":
             self.do_series()
         elif type == "availability":
-            self.do_check_availability()
+            if title_starts_with:
+                self.do_check_availability_by_name(title_starts_with)
+            else:
+                self.do_check_availability()
         elif type == "calendar":
             self.do_comics_from_calendar(start_date or (datetime.datetime.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'),
                                          end_date or (datetime.datetime.today() + datetime.timedelta(days=7)).strftime('%Y-%m-%d'))
@@ -236,6 +238,25 @@ class Command(BaseCommand):
             availability_last_check__lt=yesterday, pub_date__year=current_date.year) | Q(availability_last_check=None)) \
             .order_by('-pub_date', '-modified_date')
 
+        self.check_books_availability(books)
+
+    def do_check_availability_by_name(self, search):
+        queryset = Book.objects.filter(available_online=False)
+        search_terms = search.split(" ")
+        for term in search_terms:
+            # ignore dashes
+            if term == "-":
+                continue
+
+            # if starts with a dash then it's an exclude term
+            if term.startswith("-"):
+                queryset = queryset.exclude(title__icontains=term[1:])
+                continue
+
+            queryset = queryset.filter(title__icontains=term)
+        self.check_books_availability(queryset)
+
+    def check_books_availability(self, books):
         total_to_check = books.count()
         checked = 0
         for book in books:
