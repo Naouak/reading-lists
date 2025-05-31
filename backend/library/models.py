@@ -50,9 +50,7 @@ class Book(models.Model):
 
 def readable_books_query_set():
     return Book.objects \
-        .filter(available_online=1) \
-        .exclude(modified_date__lt=timezone.make_aware(datetime.today())-timedelta(days=61))
-
+        .filter(available_online=1)
 
 class BookReadingHistory(models.Model):
     book = models.OneToOneField(Book, related_name='last_read_history', on_delete=models.CASCADE)
