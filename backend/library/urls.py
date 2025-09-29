@@ -2,6 +2,7 @@ from django.urls import path, include
 
 import library.views.books
 import library.views.statistics
+import library.views.redirects
 
 from rest_framework_nested import routers
 
@@ -25,5 +26,6 @@ urlpatterns = [
     path('monthly-completion/', library.views.statistics.monthly_completion),
     path('reading-history-summary/', library.views.books.read_history),
     path('book-link-graph/', library.views.books.book_links_graph),
-    path('reading-report/', library.views.statistics.reading_report)
+    path('reading-report/', library.views.statistics.reading_report),
+    path('read_online/<int:book_id>', library.views.redirects.read_online),
 ]
