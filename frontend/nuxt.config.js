@@ -66,6 +66,11 @@ module.exports = {
     baseURL: process.env.API_SERVER || "http://localhost:8000",
   },
 
+  publicRuntimeConfig: {
+    baseURL: process.env.API_SERVER || "http://localhost:8000",
+  },
+
+
   buefy: {
     'materialDesignIconsHRef': 'https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css'
   },
