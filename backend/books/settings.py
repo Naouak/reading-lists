@@ -169,6 +169,7 @@ MARVEL_API = {
 }
 
 CORS_ORIGIN_WHITELIST = os.getenv('FRONTEND_URL').split(',')
+CORS_ALLOW_CREDENTIALS = True
 
 OAUTH2_PROVIDER = {
     # this is the list of available scopes
